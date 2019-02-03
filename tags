@@ -1,0 +1,204 @@
+!_TAG_FILE_FORMAT	2	/extended format; --format=1 will not append ;" to lines/
+!_TAG_FILE_SORTED	1	/0=unsorted, 1=sorted, 2=foldcase/
+!_TAG_PROGRAM_AUTHOR	Darren Hiebert	/dhiebert@users.sourceforge.net/
+!_TAG_PROGRAM_NAME	Exuberant Ctags	//
+!_TAG_PROGRAM_URL	http://ctags.sourceforge.net	/official site/
+!_TAG_PROGRAM_VERSION	5.8	//
+ChannelUsed	.piolibdeps/ESP32Servo_ID4744/src/ESP32PWM.cpp	/^ESP32PWM * ESP32PWM::ChannelUsed[NUM_PWM]; \/\/ used to track whether a channel is in service$/;"	m	class:ESP32PWM	file:
+ChannelUsed	.piolibdeps/ESP32Servo_ID4744/src/ESP32PWM.h	/^	static ESP32PWM * ChannelUsed[NUM_PWM]; \/\/ used to track whether a channel is in service$/;"	m	class:ESP32PWM
+DEFAULT_PULSE_WIDTH	.piolibdeps/ESP32Servo_ID4744/src/ESP32Servo.h	/^#define DEFAULT_PULSE_WIDTH /;"	d
+DEFAULT_PULSE_WIDTH_TICKS	.piolibdeps/ESP32Servo_ID4744/src/ESP32Servo.h	/^#define DEFAULT_PULSE_WIDTH_TICKS /;"	d
+DEFAULT_TIMER_WIDTH	.piolibdeps/ESP32Servo_ID4744/src/ESP32Servo.h	/^#define DEFAULT_TIMER_WIDTH /;"	d
+DEFAULT_TIMER_WIDTH_TICKS	.piolibdeps/ESP32Servo_ID4744/src/ESP32Servo.h	/^#define DEFAULT_TIMER_WIDTH_TICKS /;"	d
+DEFAULT_uS_HIGH	.piolibdeps/ESP32Servo_ID4744/src/ESP32Servo.h	/^#define DEFAULT_uS_HIGH /;"	d
+DEFAULT_uS_LOW	.piolibdeps/ESP32Servo_ID4744/src/ESP32Servo.h	/^#define DEFAULT_uS_LOW /;"	d
+ENFORCE_PINS	.piolibdeps/ESP32Servo_ID4744/src/ESP32Servo.h	/^#define ENFORCE_PINS$/;"	d
+ESP32AnalogWrite	.piolibdeps/ESP32Servo_ID4744/src/analogWrite.h	/^#define ESP32AnalogWrite$/;"	d
+ESP32PWM	.piolibdeps/ESP32Servo_ID4744/src/ESP32PWM.cpp	/^ESP32PWM::ESP32PWM() {$/;"	f	class:ESP32PWM
+ESP32PWM	.piolibdeps/ESP32Servo_ID4744/src/ESP32PWM.h	/^class ESP32PWM {$/;"	c
+ESP32_Servo_VERSION	.piolibdeps/ESP32Servo_ID4744/src/ESP32Servo.h	/^#define ESP32_Servo_VERSION /;"	d
+ESP32_Servo_h	.piolibdeps/ESP32Servo_ID4744/src/ESP32Servo.h	/^#define ESP32_Servo_h$/;"	d
+ExampleRobot	lib/Drone/Drone.cpp	/^ExampleRobot::ExampleRobot(String * mn) {$/;"	f	class:ExampleRobot
+ExampleRobot	lib/Drone/Drone.h	/^class ExampleRobot {$/;"	c
+ISR	src/main.cpp	/^ISR(PCINT0_vect){$/;"	f
+LIBRARIES_ESP32SERVO_SRC_ESP32PWM_H_	.piolibdeps/ESP32Servo_ID4744/src/ESP32PWM.h	/^#define LIBRARIES_ESP32SERVO_SRC_ESP32PWM_H_$/;"	d
+LIBRARIES_ESP32SERVO_SRC_ESP32TONE_H_	.piolibdeps/ESP32Servo_ID4744/src/ESP32Tone.h	/^#define LIBRARIES_ESP32SERVO_SRC_ESP32TONE_H_$/;"	d
+LOWER_LEFT_MOTOR	src/config.h	/^#define LOWER_LEFT_MOTOR /;"	d
+LOWER_RIGHT_MOTOR	src/config.h	/^#define LOWER_RIGHT_MOTOR /;"	d
+MAX_PULSE_LENGTH	src/config.h	/^#define MAX_PULSE_LENGTH /;"	d
+MAX_PULSE_WIDTH	.piolibdeps/ESP32Servo_ID4744/src/ESP32Servo.h	/^#define MAX_PULSE_WIDTH /;"	d
+MAX_SERVOS	.piolibdeps/ESP32Servo_ID4744/src/ESP32Servo.h	/^#define MAX_SERVOS /;"	d
+MIN_PULSE_LENGTH	src/config.h	/^#define MIN_PULSE_LENGTH /;"	d
+MIN_PULSE_WIDTH	.piolibdeps/ESP32Servo_ID4744/src/ESP32Servo.h	/^#define MIN_PULSE_WIDTH /;"	d
+NUM_PWM	.piolibdeps/ESP32Servo_ID4744/src/ESP32PWM.h	/^#define NUM_PWM /;"	d
+PWMCount	.piolibdeps/ESP32Servo_ID4744/src/ESP32PWM.cpp	/^int ESP32PWM::PWMCount = -1;              \/\/ the total number of attached servos$/;"	m	class:ESP32PWM	file:
+PWMCount	.piolibdeps/ESP32Servo_ID4744/src/ESP32PWM.h	/^	static int PWMCount;              \/\/ the total number of attached servos$/;"	m	class:ESP32PWM
+PWM_BASE_INDEX	.piolibdeps/ESP32Servo_ID4744/src/ESP32PWM.h	/^#define PWM_BASE_INDEX /;"	d
+REFRESH_CPS	.piolibdeps/ESP32Servo_ID4744/src/ESP32Servo.h	/^	int REFRESH_CPS = 50;$/;"	m	class:Servo
+REFRESH_USEC	.piolibdeps/ESP32Servo_ID4744/src/ESP32Servo.h	/^#define REFRESH_USEC /;"	d
+SRC_EXAMPLEROBOT_H_	lib/Drone/Drone.h	/^#define SRC_EXAMPLEROBOT_H_$/;"	d
+Servo	.piolibdeps/ESP32Servo_ID4744/src/ESP32Servo.cpp	/^Servo::Servo()$/;"	f	class:Servo
+Servo	.piolibdeps/ESP32Servo_ID4744/src/ESP32Servo.h	/^class Servo {$/;"	c
+Startup	lib/Drone/Drone.h	/^	Startup,$/;"	e	enum:state_t
+UPPER_LEFT_MOTOR	src/config.h	/^#define UPPER_LEFT_MOTOR /;"	d
+UPPER_RIGHT_MOTOR	src/config.h	/^#define UPPER_RIGHT_MOTOR /;"	d
+USABLE_ESP32_PWM	.piolibdeps/ESP32Servo_ID4744/src/ESP32PWM.h	/^#define USABLE_ESP32_PWM /;"	d
+WaitForConnect	lib/Drone/Drone.h	/^	WaitForConnect,$/;"	e	enum:state_t
+adjustFrequency	.piolibdeps/ESP32Servo_ID4744/src/ESP32PWM.cpp	/^void ESP32PWM::adjustFrequency(double freq, float dutyScaled) {$/;"	f	class:ESP32PWM
+analogWrite	.piolibdeps/ESP32Servo_ID4744/src/analogWrite.cpp	/^void analogWrite(uint8_t APin, uint16_t AValue) {$/;"	f
+attach	.piolibdeps/ESP32Servo_ID4744/src/ESP32PWM.cpp	/^void ESP32PWM::attach(int p) {$/;"	f	class:ESP32PWM
+attach	.piolibdeps/ESP32Servo_ID4744/src/ESP32Servo.cpp	/^int Servo::attach(int pin)$/;"	f	class:Servo
+attach	.piolibdeps/ESP32Servo_ID4744/src/ESP32Servo.cpp	/^int Servo::attach(int pin, int min, int max)$/;"	f	class:Servo
+attachPin	.piolibdeps/ESP32Servo_ID4744/src/ESP32PWM.cpp	/^void ESP32PWM::attachPin(uint8_t pin) {$/;"	f	class:ESP32PWM
+attachPin	.piolibdeps/ESP32Servo_ID4744/src/ESP32PWM.cpp	/^void ESP32PWM::attachPin(uint8_t pin, double freq, uint8_t resolution_bits) {$/;"	f	class:ESP32PWM
+attached	.piolibdeps/ESP32Servo_ID4744/src/ESP32PWM.h	/^	bool attached(){$/;"	f	class:ESP32PWM
+attached	.piolibdeps/ESP32Servo_ID4744/src/ESP32Servo.cpp	/^bool Servo::attached()$/;"	f	class:Servo
+attachedState	.piolibdeps/ESP32Servo_ID4744/src/ESP32PWM.h	/^	bool attachedState= false;$/;"	m	class:ESP32PWM
+battery_voltage	src/main.cpp	/^int throttle, battery_voltage;$/;"	v
+bno	lib/Drone/Drone.h	/^	Adafruit_BNO055 bno;$/;"	m	class:ExampleRobot
+cal_int	src/main.cpp	/^int cal_int, start, gyro_address;$/;"	v
+calculate_pid	src/main.cpp	/^void calculate_pid(){$/;"	f
+channelsRemaining	.piolibdeps/ESP32Servo_ID4744/src/ESP32PWM.h	/^	static int channelsRemaining(){$/;"	f	class:ESP32PWM
+checkFrequencyForSideEffects	.piolibdeps/ESP32Servo_ID4744/src/ESP32PWM.cpp	/^bool ESP32PWM::checkFrequencyForSideEffects(double freq){$/;"	f	class:ESP32PWM
+coms	lib/Drone/Drone.h	/^	UDPSimplePacket coms;$/;"	m	class:ExampleRobot
+control	lib/Drone/Drone.h	/^	Accessory control;$/;"	m	class:ExampleRobot
+convert_receiver_channel	src/main.cpp	/^int convert_receiver_channel(byte function){$/;"	f
+counter_channel_1	src/main.cpp	/^int counter_channel_1, counter_channel_2, counter_channel_3, counter_channel_4, loop_counter;$/;"	v
+counter_channel_2	src/main.cpp	/^int counter_channel_1, counter_channel_2, counter_channel_3, counter_channel_4, loop_counter;$/;"	v
+counter_channel_3	src/main.cpp	/^int counter_channel_1, counter_channel_2, counter_channel_3, counter_channel_4, loop_counter;$/;"	v
+counter_channel_4	src/main.cpp	/^int counter_channel_1, counter_channel_2, counter_channel_3, counter_channel_4, loop_counter;$/;"	v
+current_time	src/main.cpp	/^unsigned long timer_1, timer_2, timer_3, timer_4, current_time;$/;"	v
+detach	.piolibdeps/ESP32Servo_ID4744/src/ESP32PWM.cpp	/^void ESP32PWM::detach() {$/;"	f	class:ESP32PWM
+detach	.piolibdeps/ESP32Servo_ID4744/src/ESP32Servo.cpp	/^void Servo::detach()$/;"	f	class:Servo
+detachPin	.piolibdeps/ESP32Servo_ID4744/src/ESP32PWM.cpp	/^void ESP32PWM::detachPin(uint8_t pin) {$/;"	f	class:ESP32PWM
+eeprom_data	src/main.cpp	/^byte eeprom_data[36];$/;"	v
+esc_1	src/main.cpp	/^int esc_1, esc_2, esc_3, esc_4;$/;"	v
+esc_2	src/main.cpp	/^int esc_1, esc_2, esc_3, esc_4;$/;"	v
+esc_3	src/main.cpp	/^int esc_1, esc_2, esc_3, esc_4;$/;"	v
+esc_4	src/main.cpp	/^int esc_1, esc_2, esc_3, esc_4;$/;"	v
+esc_loop_timer	src/main.cpp	/^unsigned long timer_channel_1, timer_channel_2, timer_channel_3, timer_channel_4, esc_timer, esc_loop_timer;$/;"	v
+esc_timer	src/main.cpp	/^unsigned long timer_channel_1, timer_channel_2, timer_channel_3, timer_channel_4, esc_timer, esc_loop_timer;$/;"	v
+fastLoop	lib/Drone/Drone.cpp	/^void ExampleRobot::fastLoop() {$/;"	f	class:ExampleRobot
+getChannel	.piolibdeps/ESP32Servo_ID4744/src/ESP32PWM.cpp	/^int ESP32PWM::getChannel() {$/;"	f	class:ESP32PWM
+getPin	.piolibdeps/ESP32Servo_ID4744/src/ESP32PWM.h	/^	int getPin(){$/;"	f	class:ESP32PWM
+getPwm	.piolibdeps/ESP32Servo_ID4744/src/ESP32Servo.cpp	/^ESP32PWM * Servo::getPwm(){$/;"	f	class:Servo
+getTimer	.piolibdeps/ESP32Servo_ID4744/src/ESP32PWM.h	/^	int getTimer(){$/;"	f	class:ESP32PWM
+gyro_address	src/main.cpp	/^int cal_int, start, gyro_address;$/;"	v
+gyro_axis	src/main.cpp	/^double gyro_axis[4], gyro_axis_cal[4];$/;"	v
+gyro_axis_cal	src/main.cpp	/^double gyro_axis[4], gyro_axis_cal[4];$/;"	v
+gyro_pitch	src/main.cpp	/^double gyro_pitch, gyro_roll, gyro_yaw;$/;"	v
+gyro_pitch_input	src/main.cpp	/^float pid_i_mem_pitch, pid_pitch_setpoint, gyro_pitch_input, pid_output_pitch, pid_last_pitch_d_error;$/;"	v
+gyro_roll	src/main.cpp	/^double gyro_pitch, gyro_roll, gyro_yaw;$/;"	v
+gyro_roll_input	src/main.cpp	/^float pid_i_mem_roll, pid_roll_setpoint, gyro_roll_input, pid_output_roll, pid_last_roll_d_error;$/;"	v
+gyro_signalen	src/main.cpp	/^void gyro_signalen(){$/;"	f
+gyro_yaw	src/main.cpp	/^double gyro_pitch, gyro_roll, gyro_yaw;$/;"	v
+gyro_yaw_input	src/main.cpp	/^float pid_i_mem_yaw, pid_yaw_setpoint, gyro_yaw_input, pid_output_yaw, pid_last_yaw_d_error;$/;"	v
+hasPwm	.piolibdeps/ESP32Servo_ID4744/src/ESP32PWM.h	/^	static bool hasPwm(int pin){$/;"	f	class:ESP32PWM
+highByte	src/main.cpp	/^byte highByte, lowByte;$/;"	v
+jaw	lib/Drone/Drone.h	/^	Servo jaw;$/;"	m	class:ExampleRobot
+lastPrint	lib/Drone/Drone.h	/^	int64_t lastPrint = 0;$/;"	m	class:ExampleRobot
+last_channel_1	src/main.cpp	/^byte last_channel_1, last_channel_2, last_channel_3, last_channel_4;$/;"	v
+last_channel_2	src/main.cpp	/^byte last_channel_1, last_channel_2, last_channel_3, last_channel_4;$/;"	v
+last_channel_3	src/main.cpp	/^byte last_channel_1, last_channel_2, last_channel_3, last_channel_4;$/;"	v
+last_channel_4	src/main.cpp	/^byte last_channel_1, last_channel_2, last_channel_3, last_channel_4;$/;"	v
+loop	lib/Drone/Drone.cpp	/^void Drone::loop() {$/;"	f	class:Drone
+loop	src/main.cpp	/^void loop(){$/;"	f
+loop_counter	src/main.cpp	/^int counter_channel_1, counter_channel_2, counter_channel_3, counter_channel_4, loop_counter;$/;"	v
+loop_timer	src/main.cpp	/^unsigned long loop_timer;$/;"	v
+lowByte	src/main.cpp	/^byte highByte, lowByte;$/;"	v
+manager	lib/Drone/Drone.h	/^	WifiManager manager;$/;"	m	class:ExampleRobot
+mapf	.piolibdeps/ESP32Servo_ID4744/src/ESP32PWM.h	/^	static float mapf(float x, float in_min, float in_max, float out_min, float out_max) {$/;"	f	class:ESP32PWM
+mapf	lib/Drone/Drone.cpp	/^float mapf(float x, float in_min, float in_max, float out_min, float out_max) {$/;"	f
+max	.piolibdeps/ESP32Servo_ID4744/src/ESP32Servo.h	/^	int max = DEFAULT_uS_HIGH;            \/\/ maximum pulse width for this servo$/;"	m	class:Servo
+min	.piolibdeps/ESP32Servo_ID4744/src/ESP32Servo.h	/^	int min = DEFAULT_uS_LOW;           \/\/ minimum pulse width for this servo$/;"	m	class:Servo
+motor1	lib/Drone/Drone.h	/^	HBridgeEncoderPIDMotor motor1;  \/\/ PID controlled motor object$/;"	m	class:ExampleRobot
+motor2	lib/Drone/Drone.h	/^	HBridgeEncoderPIDMotor motor2; \/\/ PID controlled motor object$/;"	m	class:ExampleRobot
+myDFRobotIRPosition	lib/Drone/Drone.h	/^	DFRobotIRPosition myDFRobotIRPosition;$/;"	m	class:ExampleRobot
+myFreq	.piolibdeps/ESP32Servo_ID4744/src/ESP32PWM.h	/^	double myFreq;$/;"	m	class:ESP32PWM
+name	lib/Drone/Drone.h	/^	String * name;\/\/$/;"	m	class:ExampleRobot
+noTone	.piolibdeps/ESP32Servo_ID4744/src/ESP32Tone.cpp	/^void noTone(int pin){$/;"	f
+numberOfPID	lib/Drone/Drone.h	/^#define numberOfPID /;"	d
+panEyes	lib/Drone/Drone.h	/^	Servo panEyes;$/;"	m	class:ExampleRobot
+pidList	lib/Drone/Drone.h	/^	 PIDMotor * pidList[numberOfPID];\/\/ = { &motor1.myPID, &motor2.myPID };$/;"	m	class:ExampleRobot
+pid_d_gain_pitch	src/main.cpp	/^float pid_d_gain_pitch = pid_d_gain_roll;  \/\/Gain setting for the pitch D-controller.$/;"	v
+pid_d_gain_roll	src/main.cpp	/^float pid_d_gain_roll = 15;                \/\/Gain setting for the roll D-controller (15)$/;"	v
+pid_d_gain_yaw	src/main.cpp	/^float pid_d_gain_yaw = 0.0;                \/\/Gain setting for the pitch D-controller.$/;"	v
+pid_error_temp	src/main.cpp	/^float pid_error_temp;$/;"	v
+pid_i_gain_pitch	src/main.cpp	/^float pid_i_gain_pitch = pid_i_gain_roll;  \/\/Gain setting for the pitch I-controller.$/;"	v
+pid_i_gain_roll	src/main.cpp	/^float pid_i_gain_roll = 0.05;              \/\/Gain setting for the roll I-controller (0.05)$/;"	v
+pid_i_gain_yaw	src/main.cpp	/^float pid_i_gain_yaw = 0.02;               \/\/Gain setting for the pitch I-controller. \/\/0.02$/;"	v
+pid_i_mem_pitch	src/main.cpp	/^float pid_i_mem_pitch, pid_pitch_setpoint, gyro_pitch_input, pid_output_pitch, pid_last_pitch_d_error;$/;"	v
+pid_i_mem_roll	src/main.cpp	/^float pid_i_mem_roll, pid_roll_setpoint, gyro_roll_input, pid_output_roll, pid_last_roll_d_error;$/;"	v
+pid_i_mem_yaw	src/main.cpp	/^float pid_i_mem_yaw, pid_yaw_setpoint, gyro_yaw_input, pid_output_yaw, pid_last_yaw_d_error;$/;"	v
+pid_last_pitch_d_error	src/main.cpp	/^float pid_i_mem_pitch, pid_pitch_setpoint, gyro_pitch_input, pid_output_pitch, pid_last_pitch_d_error;$/;"	v
+pid_last_roll_d_error	src/main.cpp	/^float pid_i_mem_roll, pid_roll_setpoint, gyro_roll_input, pid_output_roll, pid_last_roll_d_error;$/;"	v
+pid_last_yaw_d_error	src/main.cpp	/^float pid_i_mem_yaw, pid_yaw_setpoint, gyro_yaw_input, pid_output_yaw, pid_last_yaw_d_error;$/;"	v
+pid_max_pitch	src/main.cpp	/^int pid_max_pitch = pid_max_roll;          \/\/Maximum output of the PID-controller (+\/-)$/;"	v
+pid_max_roll	src/main.cpp	/^int pid_max_roll = 400;                    \/\/Maximum output of the PID-controller (+\/-)$/;"	v
+pid_max_yaw	src/main.cpp	/^int pid_max_yaw = 400;                     \/\/Maximum output of the PID-controller (+\/-)$/;"	v
+pid_output_pitch	src/main.cpp	/^float pid_i_mem_pitch, pid_pitch_setpoint, gyro_pitch_input, pid_output_pitch, pid_last_pitch_d_error;$/;"	v
+pid_output_roll	src/main.cpp	/^float pid_i_mem_roll, pid_roll_setpoint, gyro_roll_input, pid_output_roll, pid_last_roll_d_error;$/;"	v
+pid_output_yaw	src/main.cpp	/^float pid_i_mem_yaw, pid_yaw_setpoint, gyro_yaw_input, pid_output_yaw, pid_last_yaw_d_error;$/;"	v
+pid_p_gain_pitch	src/main.cpp	/^float pid_p_gain_pitch = pid_p_gain_roll;  \/\/Gain setting for the pitch P-controller.$/;"	v
+pid_p_gain_roll	src/main.cpp	/^float pid_p_gain_roll = 1.4;               \/\/Gain setting for the roll P-controller (1.3)$/;"	v
+pid_p_gain_yaw	src/main.cpp	/^float pid_p_gain_yaw = 4.0;                \/\/Gain setting for the pitch P-controller. \/\/4.0$/;"	v
+pid_pitch_setpoint	src/main.cpp	/^float pid_i_mem_pitch, pid_pitch_setpoint, gyro_pitch_input, pid_output_pitch, pid_last_pitch_d_error;$/;"	v
+pid_roll_setpoint	src/main.cpp	/^float pid_i_mem_roll, pid_roll_setpoint, gyro_roll_input, pid_output_roll, pid_last_roll_d_error;$/;"	v
+pid_yaw_setpoint	src/main.cpp	/^float pid_i_mem_yaw, pid_yaw_setpoint, gyro_yaw_input, pid_output_yaw, pid_last_yaw_d_error;$/;"	v
+pin	.piolibdeps/ESP32Servo_ID4744/src/ESP32PWM.h	/^	int pin;$/;"	m	class:ESP32PWM
+pinNumber	.piolibdeps/ESP32Servo_ID4744/src/ESP32Servo.h	/^	int pinNumber = 0;                      \/\/ GPIO pin assigned to this channel$/;"	m	class:Servo
+pwm	.piolibdeps/ESP32Servo_ID4744/src/ESP32Servo.h	/^	ESP32PWM pwm;$/;"	m	class:Servo
+pwmChannel	.piolibdeps/ESP32Servo_ID4744/src/ESP32PWM.h	/^	int pwmChannel = 0;                         \/\/ channel number for this servo$/;"	m	class:ESP32PWM
+pwmFactory	.piolibdeps/ESP32Servo_ID4744/src/ESP32PWM.cpp	/^ESP32PWM* pwmFactory(int pin) {$/;"	f
+read	.piolibdeps/ESP32Servo_ID4744/src/ESP32PWM.cpp	/^uint32_t ESP32PWM::read() {$/;"	f	class:ESP32PWM
+read	.piolibdeps/ESP32Servo_ID4744/src/ESP32Servo.cpp	/^int Servo::read() \/\/ return the value as degrees$/;"	f	class:Servo
+readFreq	.piolibdeps/ESP32Servo_ID4744/src/ESP32PWM.cpp	/^double ESP32PWM::readFreq() {$/;"	f	class:ESP32PWM
+readGame	lib/Drone/Drone.h	/^	readGame,$/;"	e	enum:state_t
+readIMU	lib/Drone/Drone.h	/^	readIMU,$/;"	e	enum:state_t
+readIR	lib/Drone/Drone.h	/^	readIR$/;"	e	enum:state_t
+readMicroseconds	.piolibdeps/ESP32Servo_ID4744/src/ESP32Servo.cpp	/^int Servo::readMicroseconds()$/;"	f	class:Servo
+readTimerWidth	.piolibdeps/ESP32Servo_ID4744/src/ESP32Servo.cpp	/^int Servo::readTimerWidth()$/;"	f	class:Servo
+receiver_input	src/main.cpp	/^int receiver_input[5];$/;"	v
+receiver_input_channel_1	src/main.cpp	/^int receiver_input_channel_1, receiver_input_channel_2, receiver_input_channel_3, receiver_input_channel_4;$/;"	v
+receiver_input_channel_2	src/main.cpp	/^int receiver_input_channel_1, receiver_input_channel_2, receiver_input_channel_3, receiver_input_channel_4;$/;"	v
+receiver_input_channel_3	src/main.cpp	/^int receiver_input_channel_1, receiver_input_channel_2, receiver_input_channel_3, receiver_input_channel_4;$/;"	v
+receiver_input_channel_4	src/main.cpp	/^int receiver_input_channel_1, receiver_input_channel_2, receiver_input_channel_3, receiver_input_channel_4;$/;"	v
+resolutionBits	.piolibdeps/ESP32Servo_ID4744/src/ESP32PWM.h	/^	uint8_t resolutionBits;$/;"	m	class:ESP32PWM
+runGameControl	lib/Drone/Drone.cpp	/^void ExampleRobot::runGameControl() {$/;"	f	class:ExampleRobot
+sensor	lib/Drone/Drone.h	/^	GetIMU * sensor;$/;"	m	class:ExampleRobot
+serverIR	lib/Drone/Drone.h	/^	IRCamSimplePacketComsServer * serverIR;$/;"	m	class:ExampleRobot
+setPeriodHertz	.piolibdeps/ESP32Servo_ID4744/src/ESP32Servo.h	/^	void setPeriodHertz(int hertz){$/;"	f	class:Servo
+setTimerWidth	.piolibdeps/ESP32Servo_ID4744/src/ESP32Servo.cpp	/^void Servo::setTimerWidth(int value)$/;"	f	class:Servo
+setup	.piolibdeps/ESP32Servo_ID4744/src/ESP32PWM.cpp	/^double ESP32PWM::setup(double freq, uint8_t resolution_bits) {$/;"	f	class:ESP32PWM
+setup	lib/Drone/Drone.cpp	/^void ExampleRobot::setup() {$/;"	f	class:ExampleRobot
+setup	src/main.cpp	/^void setup(){$/;"	f
+setupPIDServers	lib/Drone/Drone.cpp	/^void ExampleRobot::setupPIDServers(){$/;"	f	class:ExampleRobot
+start	src/main.cpp	/^int cal_int, start, gyro_address;$/;"	v
+state	lib/Drone/Drone.h	/^	state_t state=Startup;$/;"	m	class:ExampleRobot
+state_t	lib/Drone/Drone.h	/^enum state_t {$/;"	g
+throttle	src/main.cpp	/^int throttle, battery_voltage;$/;"	v
+ticks	.piolibdeps/ESP32Servo_ID4744/src/ESP32Servo.h	/^	int ticks = DEFAULT_PULSE_WIDTH_TICKS; \/\/ current pulse width on this channel$/;"	m	class:Servo
+ticksToUs	.piolibdeps/ESP32Servo_ID4744/src/ESP32Servo.cpp	/^int Servo::ticksToUs(int ticks)$/;"	f	class:Servo
+tiltEyes	lib/Drone/Drone.h	/^	Servo tiltEyes;$/;"	m	class:ExampleRobot
+timer_1	src/main.cpp	/^unsigned long timer_1, timer_2, timer_3, timer_4, current_time;$/;"	v
+timer_2	src/main.cpp	/^unsigned long timer_1, timer_2, timer_3, timer_4, current_time;$/;"	v
+timer_3	src/main.cpp	/^unsigned long timer_1, timer_2, timer_3, timer_4, current_time;$/;"	v
+timer_4	src/main.cpp	/^unsigned long timer_1, timer_2, timer_3, timer_4, current_time;$/;"	v
+timer_channel_1	src/main.cpp	/^unsigned long timer_channel_1, timer_channel_2, timer_channel_3, timer_channel_4, esc_timer, esc_loop_timer;$/;"	v
+timer_channel_2	src/main.cpp	/^unsigned long timer_channel_1, timer_channel_2, timer_channel_3, timer_channel_4, esc_timer, esc_loop_timer;$/;"	v
+timer_channel_3	src/main.cpp	/^unsigned long timer_channel_1, timer_channel_2, timer_channel_3, timer_channel_4, esc_timer, esc_loop_timer;$/;"	v
+timer_channel_4	src/main.cpp	/^unsigned long timer_channel_1, timer_channel_2, timer_channel_3, timer_channel_4, esc_timer, esc_loop_timer;$/;"	v
+timer_width	.piolibdeps/ESP32Servo_ID4744/src/ESP32Servo.h	/^	int timer_width = DEFAULT_TIMER_WIDTH; \/\/ ESP32 allows variable width PWM timers$/;"	m	class:Servo
+timer_width_ticks	.piolibdeps/ESP32Servo_ID4744/src/ESP32Servo.h	/^	int timer_width_ticks = DEFAULT_TIMER_WIDTH_TICKS; \/\/ no. of ticks at rollover; varies with width$/;"	m	class:Servo
+tone	.piolibdeps/ESP32Servo_ID4744/src/ESP32Tone.cpp	/^void tone(int APin,unsigned int frequency){$/;"	f
+tone	.piolibdeps/ESP32Servo_ID4744/src/ESP32Tone.cpp	/^void tone(int pin, unsigned int frequency, unsigned long duration){$/;"	f
+usToTicks	.piolibdeps/ESP32Servo_ID4744/src/ESP32Servo.cpp	/^int Servo::usToTicks(int usec)$/;"	f	class:Servo
+wristPtr	lib/Drone/Drone.h	/^	GearWrist * wristPtr; \/\/ An object to mux\/demux the 2 motors using the bevel gear differential.$/;"	m	class:ExampleRobot
+write	.piolibdeps/ESP32Servo_ID4744/src/ESP32PWM.cpp	/^void ESP32PWM::write(uint32_t duty) {$/;"	f	class:ESP32PWM
+write	.piolibdeps/ESP32Servo_ID4744/src/ESP32Servo.cpp	/^void Servo::write(int value)$/;"	f	class:Servo
+writeMicroseconds	.piolibdeps/ESP32Servo_ID4744/src/ESP32Servo.cpp	/^void Servo::writeMicroseconds(int value)$/;"	f	class:Servo
+writeNote	.piolibdeps/ESP32Servo_ID4744/src/ESP32PWM.cpp	/^double ESP32PWM::writeNote(note_t note, uint8_t octave) {$/;"	f	class:ESP32PWM
+writeScaled	.piolibdeps/ESP32Servo_ID4744/src/ESP32PWM.cpp	/^void ESP32PWM::writeScaled(float duty) {$/;"	f	class:ESP32PWM
+writeTone	.piolibdeps/ESP32Servo_ID4744/src/ESP32PWM.cpp	/^double ESP32PWM::writeTone(double freq) {$/;"	f	class:ESP32PWM
+~ESP32PWM	.piolibdeps/ESP32Servo_ID4744/src/ESP32PWM.cpp	/^ESP32PWM::~ESP32PWM() {$/;"	f	class:ESP32PWM
+~ExampleRobot	lib/Drone/Drone.cpp	/^ExampleRobot::~ExampleRobot() {$/;"	f	class:ExampleRobot
