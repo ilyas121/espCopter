@@ -1,5 +1,5 @@
-#ifndef FLIGHT_CONTROLLER_H
-#define FLIGHT_CONTROLLER_H
+#ifndef MOTOR_CONTROLLER_H
+#define MOTOR_CONTROLLER_H
 
 #include <Arduino.h>
 #include "config.h"
@@ -7,7 +7,7 @@
 #include <ESP32Servo.h>
 #include "Reciever.h"
 #include "Adafruit_BNO055.h"
-class FlightController {
+class MotorController {
 private:
 	// Motor (servo) objects
 	Servo frontRight;
@@ -20,7 +20,7 @@ private:
 	// Internal setup function. set up all objects
 	
 public:
-	FlightController(Reciever* inputs, Servo* motors);
+	MotorController(Reciever* inputs, Servo** motors);
 	// Pulse the loop function from the main thread
 	void loop();
 };

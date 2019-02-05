@@ -2,7 +2,9 @@
 #include <ESP32Servo.h>
 #include "config.h"
 #include "Reciever.h"
-#include "FlightController.h"
+#include "MotorController.h"
+#include "Imu.h"
+#include "Drone.h"
 // ---------------------------------------------------------------------------
 //Globals
  double pastRh = 0;
@@ -22,9 +24,9 @@ portMUX_TYPE mux = portMUX_INITIALIZER_UNLOCKED;
 //Reciever/comms
 Reciever* rc = new Reciever(&valueLh, &valueLv, &valueRh, &valueRv);
 //Motor system controls
-FlightController* flight;
+MotorController* flight;
 Servo motA, motB, motC, motD;
-Servo motors[4]; 
+Servo* motors[4]; 
 // ---------------------------------------------------------------------------
 
 
@@ -94,11 +96,11 @@ void setup() {
     motC.attach(LOWER_LEFT_MOTOR, MIN_PULSE_LENGTH, MAX_PULSE_LENGTH);
     motD.attach(LOWER_RIGHT_MOTOR, MIN_PULSE_LENGTH, MAX_PULSE_LENGTH);
    
-    motors[0]= motA;
-    motors[1]= motB;
-    motors[2]= motC;
-    motors[3]= motD;
-    flight = new FlightController(rc, motors);
+    motors[0]= &motA;
+    motors[1]= &motB;
+    motors[2]= &motC;
+    motors[3]= &motD;
+    flight = new MotorController(rc, motors);
 
     //Attach interrupts for the reciever
     pinMode(25, INPUT_PULLUP);
@@ -111,16 +113,17 @@ void setup() {
     attachInterrupt(digitalPinToInterrupt(14), changeLv, CHANGE);
 
     //Start up ESC's 
+    delay(5000);
     motA.writeMicroseconds(2000); 
     motB.writeMicroseconds(2000); 
     motC.writeMicroseconds(2000); 
     motD.writeMicroseconds(2000); 
-    delay(2000);
+    delay(3000);
     motA.writeMicroseconds(1000); 
     motB.writeMicroseconds(1000); 
     motC.writeMicroseconds(1000); 
     motD.writeMicroseconds(1000); 
-    delay(1000);
+    delay(2000);
 }
 
 
