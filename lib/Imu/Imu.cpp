@@ -38,12 +38,19 @@ void Imu::loop() {
 	if (updateIndex == 4) {
 		updateIndex = 0;
 	}
+	print();
 }
 
 void Imu::startSensor(Adafruit_BNO055 * _bno) {
 	bno = _bno;
 	started = true;
 
+}
+
+void Imu::getData(float* values){
+	for(int i = 0; i < 12; i++){
+		values[i] = imuReadings[i];
+	}
 }
 
 void Imu::print() {

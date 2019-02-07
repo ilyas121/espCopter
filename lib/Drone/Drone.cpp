@@ -2,18 +2,19 @@
 
 void Drone::loop() {
 	sensor->loop();
+	Serial.println("Getting Sensor Data");
 	sensor->print();
-	fastLoop();    // Run PID and wifi after State machine on all states
-
+	Serial.println("Printing Controls Data");
+	fastLoop();  
+	delay(500);
 }
 
-Drone::Drone(MotorController* mc) {
+Drone::Drone(MotorController* mc){ 
 	sensor = NULL;
 }
 
 void Drone::setup() {
-	Serial.begin(115200);
-	delay(100);
+      
 	sensor = new Imu();
 	/* Initialise the sensor */
 	if (!bno.begin()) {
