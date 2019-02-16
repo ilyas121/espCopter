@@ -2,12 +2,15 @@
 #include "Imu.h"
 
 void Imu::loop() {
+	Serial.println("IMU LOOP");
 	if (!started)
 		return;
 	imu::Vector<3> a;
 	imu::Vector<3> v;
 	imu::Vector<3> g;
 	imu::Vector<3> e;
+
+	
 	switch (updateIndex) {
 	case (0):
 		a = bno->getVector(Adafruit_BNO055::VECTOR_LINEARACCEL);

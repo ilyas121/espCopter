@@ -1,19 +1,22 @@
 #include "MotorController.h"
 
-MotorController::MotorController(Reciever* inputs, Servo** motor){
+MotorController::MotorController(Reciever* inputs, Servo* motor){
 	rc = inputs;
-	frontRight = *motor[0];
-	frontLeft = *motor[1];
-	bottomLeft = *motor[2];
-	bottomRight = *motor[3];
+	motors = motor;
 }
 
+
 void MotorController::loop(){
-	double values[4];
-	rc->getData(values);
-	Serial.println('IN THE LOOP');
-	frontRight.writeMicroseconds(values[0]);
-	frontLeft.writeMicroseconds(values[1]);
-	bottomLeft.writeMicroseconds(values[2]);
-	bottomRight.writeMicroseconds(values[3]);
+	Serial.println("Getting RC Values");
+	double values[] = {2000, 2000, 2000, 2000};
+	Serial.println("Getting Values");
+	//rc->getData(values);
+	Serial.println("IN THE LOOP1");
+	//frontRight.writeMicroseconds(1000);
+	Serial.println("IN THE LOOP2");
+	this->motors[0].writeMicroseconds(2000);
+	Serial.println("IN THE LOOP3");
+	//bottomLeft.writeMicroseconds(values[2]);
+	Serial.println("IN THE LOOP4");
+	//bottomRight.writeMicroseconds(values[3]);
 }

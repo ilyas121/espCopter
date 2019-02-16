@@ -14,13 +14,14 @@ private:
 	Servo frontLeft;
 	Servo bottomLeft;
 	Servo bottomRight;
+	Servo* motors;
 	Reciever* rc;
 	// The IMU object
 	Adafruit_BNO055 bno;
 	// Internal setup function. set up all objects
 	
 public:
-	MotorController(Reciever* inputs, Servo** motors);
+	MotorController(Reciever* inputs, Servo* motors);
 	// Pulse the loop function from the main thread
 	void loop();
 };

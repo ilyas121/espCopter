@@ -12,7 +12,7 @@ VPID::VPID(float* in, float* out, float kp, float ki, float kd){
 
 void VPID::calculatePid(){
 	float error = *input - setpoint;
-	kiError += k[1]* error;
+	kiError += k[1] * error;
 	if(kiError > max)kiError = max;
 	else if(kiError < max * -1)kiError = min * -1;
   

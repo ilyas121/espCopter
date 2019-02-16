@@ -15,7 +15,8 @@ private:
 	Imu* sensor;
 	Adafruit_BNO055 bno;
         MotorController* controller;	
-	
+        double started = false;
+
 	double imuX, imuY, imuZ;
 	double controlX, controlY, controlZ;
 	double setX, setY, setZ;
