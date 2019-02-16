@@ -2,10 +2,7 @@
 
 FlightController::FlightController(Reciever* inputs, Servo* motor){
 	rc = inputs;
-	frontRight = motor[0];
-	frontLeft = motor[1];
-	bottomLeft = motor[2];
-	bottomRight = motor[3];
+	motors = motor;
 }
 
 void FlightController::loop(){
@@ -13,7 +10,10 @@ void FlightController::loop(){
 	double values[4];
 	rc->getData(values);
 	Serial.println(values[1]);
-	frontRight.write(values[1]);
+	motors[0].writeMicroseconds(values[1]);
+	motors[1].writeMicroseconds(values[1]);
+	motors[2].writeMicroseconds(values[1]);
+	motors[3].writeMicroseconds(values[1]);
 }
 
 
