@@ -13,6 +13,8 @@ void FlightController::loop(){
 	double values[4];
 	rc->getData(values);
 	Serial.println(values[1]);
+	frontRight.write(values[1]);
 }
+
 
 
