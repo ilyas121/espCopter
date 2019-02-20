@@ -50,7 +50,7 @@ void Imu::startSensor(Adafruit_BNO055 * _bno) {
 
 }
 
-void Imu::getData(float* values){
+void Imu::getData(double* values){
 	for(int i = 0; i < 12; i++){
 		values[i] = imuReadings[i];
 	}
@@ -59,32 +59,4 @@ void Imu::getData(float* values){
 void Imu::print() {
 	if (!started)
 		return;
-	Serial.print(
-			""
-//			+"\r\n Acceleration= "
-//			+String(imuReadings[0])+" , "
-//			+String(imuReadings[1])+" , "
-//			+String(imuReadings[2])+"\r\n Gyro= "
-//			+String(imuReadings[3])+" , "
-//			+String(imuReadings[4])+" , "
-//			+String(imuReadings[5])+"\r\n Gravity= "
-//			+String(imuReadings[6])+" , "
-//			+String(imuReadings[7])+" , "
-//			+String(imuReadings[8])+
-					"\r\n Euler= " + String(imuReadings[9]) + " , "
-					+ String(imuReadings[10]) + " , "
-					+ String(imuReadings[11]) + "\r\n ");
-	/* Display calibration status for each sensor. */
-	/*
-	 uint8_t system, gyro, accel, mag = 0;
-	 bno->getCalibration(&system, &gyro, &accel, &mag);
-	 Serial.print("\r\n CALIBRATION: Sys=");
-	 Serial.print(system, DEC);
-	 Serial.print(" Gyro=");
-	 Serial.print(gyro, DEC);
-	 Serial.print(" Accel=");
-	 Serial.print(accel, DEC);
-	 Serial.print(" Mag=");
-	 Serial.println(mag, DEC);
-	 */
 }

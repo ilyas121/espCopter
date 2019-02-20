@@ -16,7 +16,7 @@ public:
 	void loop();
 	void startSensor(Adafruit_BNO055 * _bno);
 	void print();
-	void getData(float*);
+	void getData(double* values);
 };
 
 

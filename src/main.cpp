@@ -108,8 +108,8 @@ void setup() {
     motors[1]= motB;
     motors[2]= motC;
     motors[3]= motD;
-    flight = new MotorController(rc, motors);
-    drone  = new Drone(flight);
+    flight = new MotorController(motors);
+    drone  = new Drone(flight, rc);
     //Attach interrupts for the reciever
     pinMode(25, INPUT_PULLUP);
     attachInterrupt(digitalPinToInterrupt(25), changeRh, CHANGE);
@@ -141,5 +141,4 @@ void setup() {
  */
 void loop() {
 	drone->loop();
-	delay(5000);
 }

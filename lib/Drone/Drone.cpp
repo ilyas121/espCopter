@@ -4,19 +4,18 @@ void Drone::loop() {
 	if(started == true){
 	   if(USE_IMU == true){
 		sensor->loop();
-		Serial.println("Getting Sensor Data");
-		sensor->print();
            }   
-		Serial.println("Printing Controls Data");
-		fastLoop();  
-	}else{
-	   started = true;
-	   setup();
+	   sensor->getData(imuValues);
+	   Serial.println("Velocity: " + String(imuValues[3]) + ", "  + String(imuValues[4]) + ", " +  String(imuValues[5]));
+	   fastLoop();  
 	}
 }
 
-Drone::Drone(MotorController* mc){ 
+Drone::Drone(MotorController* mc, Reciever* r){ 
 	sensor = NULL;
+	controller = mc;
+	rc = r;
+	setup();
 }
 
 void Drone::setup() {
@@ -39,11 +38,11 @@ void Drone::setup() {
 	bno.setExtCrystalUse(true);
 	sensor->startSensor(&bno);
 	}
-	Serial.println("IMU IS DONE");
+	pidControllers[0] = new VPID(&imuValues[5], &controlY, yK[0], yK[1], yK[2]);
+	pidControllers[1] = new VPID(&imuValues[4], &controlZ, zK[0], zK[1], yK[2]);
+	pidControllers[2] = new VPID(&imuValues[4], &controlX, xK[0], xK[1], xK[2]);
 }
 
 void Drone::fastLoop() {
-	Serial.println("Starting Fast Loop");
-	//`controller->loop();
-	Serial.println("End of fast loop"); 
+	controller->loop();
 }

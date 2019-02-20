@@ -9,22 +9,24 @@
 #include <Adafruit_BNO055.h>
 #include "MotorController.h"
 #include "Imu.h"
-#include "Pid.h" 
+#include "Pid.h"
+#include "Reciever.h"
 class Drone {
 private:
 	Imu* sensor;
 	Adafruit_BNO055 bno;
         MotorController* controller;	
+	Reciever* rc; 
         double started = false;
 
-	double imuX, imuY, imuZ;
+	double imuValues[12];
 	double controlX, controlY, controlZ;
 	double setX, setY, setZ;
-	double Kp = 2, Ki = 5, Kd = 1;
-	double yKp = 2, yKi = 5, yKd = 1;
+	double xK[3] = {2, 5, 1};
+	double yK[3] = {2, 5, 1};
+	double zK[3] = {2, 5, 1};
 	
-	//PID yPid(&imuY, &controlY, &setY, Kp, Ki, Kd, DIRECT);
-	//PID zPid(&imuZ, &controlZ, &setZ, yKp, yKi, yKd, DIRECT);
+	VPID* pidControllers[3];
 
 	void printAll();
 	// This should be run every loop and is internally gated for fast opperation
@@ -32,7 +34,7 @@ private:
 	// Internal setup function. set up all objects
 	void setup();
 public:
-	Drone(MotorController* mc);
+	Drone(MotorController* mc, Reciever* r);
 	// Pulse the loop function from the main thread
 	void loop();
 };

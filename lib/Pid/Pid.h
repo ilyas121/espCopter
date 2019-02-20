@@ -1,18 +1,22 @@
+#ifndef VPID_H
+#define VPID_H
 class VPID{
 	//Tuneable parameters
-	float k[3];
-	float aggK[3];
+	double k[3];
+	double aggK[3];
 
 	//Output&Input Limits
-	float max;
-	float min;
-	float setpoint;
-	float lastError;
- 	float kiError;	
+	double max;
+	double min;
+	double setpoint;
+	double lastError;
+ 	double kiError;	
 	//References to external motors
-	float* input;
-	float* output;
+	double* input;
+	double* output;
 
-	void calculatePid();
-	VPID(float* in, float* out, float kp, float ki, float kd);
+	void calculate();
+	public:
+		VPID(double* in, double* out, double kp, double ki, double kd);
 };
+#endif
