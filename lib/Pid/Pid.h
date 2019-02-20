@@ -6,8 +6,8 @@ class VPID{
 	double aggK[3];
 
 	//Output&Input Limits
-	double max;
-	double min;
+	double max = 400;
+	double min = 400;
 	double setpoint;
 	double lastError;
  	double kiError;	

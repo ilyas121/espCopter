@@ -26,7 +26,7 @@ public:
 	VPID* yaw;
 	// Pulse the loop function from the main thread
 	void loop();
-	void attachControllers(VPID* arr);
+	void attachControllers(VPID** arr);
 };
 
 #endif

@@ -41,6 +41,7 @@ void Drone::setup() {
 	pidControllers[0] = new VPID(&imuValues[5], &controlY, yK[0], yK[1], yK[2]);
 	pidControllers[1] = new VPID(&imuValues[4], &controlZ, zK[0], zK[1], yK[2]);
 	pidControllers[2] = new VPID(&imuValues[4], &controlX, xK[0], xK[1], xK[2]);
+	controller->attachControllers(pidControllers);
 }
 
 void Drone::fastLoop() {

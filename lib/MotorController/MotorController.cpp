@@ -6,10 +6,10 @@ MotorController::MotorController(Servo* motor){
 }
 
 
-void MotorController::attachControllers(VPID* arr){
-	roll = arr++;
-	pitch = arr++;
-	yaw = arr; 
+void MotorController::attachControllers(VPID** arr){
+	roll = arr[0];
+	pitch = arr[1];
+	yaw = arr[2]; 
 }
 
 void MotorController::loop(){
