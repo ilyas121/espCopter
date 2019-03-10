@@ -19,6 +19,7 @@ private:
 	Reciever* rc; 
         double started = false;
 
+	double rcValues[6];
 	double imuValues[12];
 	double controlX, controlY, controlZ;
 	double setX, setY, setZ;

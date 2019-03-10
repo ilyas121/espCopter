@@ -8,15 +8,15 @@ class VPID{
 	//Output&Input Limits
 	double max = 400;
 	double min = 400;
-	double setpoint;
+	double setpoint = 0;
 	double lastError;
  	double kiError;	
 	//References to external motors
 	double* input;
 	double* output;
 
-	void calculate();
 	public:
+		void calculate();
 		VPID(double* in, double* out, double kp, double ki, double kd);
 };
 #endif

@@ -24,10 +24,17 @@ double valueLv = 0;
 double pastLh = 0;
 double valueLh = 0;
 
+double pastKl = 0;
+double valueKl = 0;
+
+double pastKr = 0;
+double valueKr = 0;
 portMUX_TYPE mux = portMUX_INITIALIZER_UNLOCKED;
 
+double* values[6] = {&valueLh, &valueLv, &valueRh, &valueRv, &valueKl, &valueKr};
+
 //Reciever/comms
-Reciever* rc = new Reciever(&valueLh, &valueLv, &valueRh, &valueRv);
+Reciever* rc = new Reciever(values);
 //Motor system controls
 MotorController* flight;
 Drone* drone;
@@ -90,6 +97,32 @@ void changeLv(){
   }
   portEXIT_CRITICAL_ISR(&mux);
 }
+
+void changeKl(){
+  portENTER_CRITICAL_ISR(&mux);
+  double temp = esp_timer_get_time() - pastKl;
+  if(digitalRead(34) == LOW){
+    if(temp > 950 && temp < 2100){
+	    valueKl = temp;
+    }
+  }else{
+    pastKl = esp_timer_get_time();
+  }
+  portEXIT_CRITICAL_ISR(&mux);
+}
+
+void changeKr(){
+  portENTER_CRITICAL_ISR(&mux);
+  double temp = esp_timer_get_time() - pastKr;
+  if(digitalRead(35) == LOW){
+    if(temp > 950 && temp < 2100){
+	    valueKr = temp;
+    }
+  }else{
+    pastKr = esp_timer_get_time();
+  }
+  portEXIT_CRITICAL_ISR(&mux);
+}
 //---------------------------------------------------------------------------
 
 /**
@@ -119,6 +152,10 @@ void setup() {
     attachInterrupt(digitalPinToInterrupt(27), changeLh, CHANGE);
     pinMode(14, INPUT_PULLUP);
     attachInterrupt(digitalPinToInterrupt(14), changeLv, CHANGE);
+    pinMode(34, INPUT_PULLUP);
+    attachInterrupt(digitalPinToInterrupt(34), changeKl, CHANGE);
+    pinMode(35, INPUT_PULLUP);
+    attachInterrupt(digitalPinToInterrupt(35), changeKr, CHANGE);
 
     //Start up ESC's 
     delay(5000);
