@@ -13,11 +13,15 @@ void MotorController::attachControllers(VPID** arr){
 }
 
 void MotorController::loop(){
-	Serial.print("Value: ");
+	double output = 0;
+	Serial.print("Roll: " + String(*(roll->output)));
+	Serial.print("Pitch: " + String(*(pitch->output)));
+	Serial.print("Yaw: " + String(*(yaw->output)));
 	double values[4] = {1500, 1500, 1500, 1500};
-	motors[0].writeMicroseconds(values[1]);
-	motors[1].writeMicroseconds(values[1]);
-	motors[2].writeMicroseconds(values[1]);
-	motors[3].writeMicroseconds(values[1]);
+	output = *(roll->output) + 1500;
+	motors[0].writeMicroseconds(output);
+	motors[1].writeMicroseconds(output);
+	motors[3].writeMicroseconds(output);
+	motors[4].writeMicroseconds(output);
 }
 
