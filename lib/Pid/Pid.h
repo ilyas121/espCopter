@@ -16,6 +16,7 @@ class VPID{
 		double* input;
 		double* output;
 		void calculate();
+		void setSetpoint(double newSet);
 		VPID(double* in, double* out, double kp, double ki, double kd);
 };
 #endif

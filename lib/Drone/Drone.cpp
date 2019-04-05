@@ -60,7 +60,7 @@ void Drone::fastLoop() {
 	pidControllers[1]->calculate();
 	pidControllers[2]->calculate();
 	double data[4] = {0,0,0,0};
-	Seria.println("Getting Data");
+	Serial.println("Getting Data");
 	rc->getData(data);
 	Serial.println("Done getting data");
 	Serial.print("Values: ");

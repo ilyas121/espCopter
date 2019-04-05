@@ -10,6 +10,11 @@ VPID::VPID(double* in, double* out, double kp, double ki, double kd){
 	output = out;
 }
 
+
+void VPID::setSetpoint(double newSet){
+	setpoint = newSet;
+}
+
 void VPID::calculate(){
 	double error = *input - setpoint;
 	if(error <= 0.19 && error >= -0.19){
