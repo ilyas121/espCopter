@@ -48,19 +48,19 @@ void Drone::setup() {
 	controlX = 0;
 	controlY = 0;
 	controlZ = 0;
-	pidControllers[1] = new VPID(&imuValues[5], &controlY, yK[0], yK[1], yK[2]);
-	pidControllers[0] = new VPID(&imuValues[4], &controlZ, zK[0], zK[1], yK[2]);
-	pidControllers[2] = new VPID(&imuValues[3], &controlX, xK[0], xK[1], xK[2]);
+	pidControllers[1] = new VPID(&imuValues[11], &controlY, yK[0], yK[1], yK[2]);
+	pidControllers[0] = new VPID(&imuValues[10], &controlZ, zK[0], zK[1], yK[2]);
+	pidControllers[2] = new VPID(&imuValues[9], &controlX, xK[0], xK[1], xK[2]);
 	controller->attachControllers(pidControllers);
 }
 
 void Drone::fastLoop() {
 	controller->loop();
 	pidControllers[0]->calculate();
-	//pidControllers[1]->calculate();
+	pidControllers[1]->calculate();
 	pidControllers[2]->calculate();
 	double data[4] = {0,0,0,0};
-	/*Seria.println("Getting Data");
+	Seria.println("Getting Data");
 	rc->getData(data);
 	Serial.println("Done getting data");
 	Serial.print("Values: ");
@@ -71,5 +71,14 @@ void Drone::fastLoop() {
 	Serial.print(data[2]);
 	Serial.print(", ");
 	Serial.print(data[3]);
-	Serial.println(".");*/
+	Serial.println(".");
+
+	pidController[0] -= 1500;
+	pidController[2] -= 1500;
+	pidController[3] -= 1500;
+
+	pidController[0] *= 20/500;
+	pidController[2] *= 20/500;
+	pidController[3] *= 20/500;
+	
 }
