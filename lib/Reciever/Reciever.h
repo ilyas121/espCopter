@@ -5,12 +5,9 @@
 
 class Reciever {
 	//ISR Globals
-	 double* leftHorizontal;
-	 double* rightHorizontal;
-	 double* rightVertical;
-	 double* leftVertical;
+	 double** values;
 	public:
-		Reciever( double* leftH,  double* leftV,  double* rightH,  double* rightV); 
+		Reciever( double** vals); 
 		void getData(double* buffer);
 		void print();
 };

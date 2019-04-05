@@ -2,27 +2,42 @@
 #include <ESP32Servo.h>
 #include "config.h"
 #include "Reciever.h"
-#include "FlightController.h"
+#include "MotorController.h"
+#include "Imu.h"
+#include "Drone.h"
+#include <WiFi.h>
+#include <ESPmDNS.h>
+#include <WiFiUdp.h>
+#include "ArduinoOTA.h"
+
 // ---------------------------------------------------------------------------
 //Globals
- double pastRh = 0;
- double valueRh = 0;
+double pastRh = 0;
+double valueRh = 0;
 
- double pastRv = 0;
- double valueRv = 0;
+double pastRv = 0;
+double valueRv = 0;
 
- double pastLv = 0;
- double valueLv = 0;
+double pastLv = 0;
+double valueLv = 0;
 
- double pastLh = 0;
- double valueLh = 0;
+double pastLh = 0;
+double valueLh = 0;
 
+double pastKl = 0;
+double valueKl = 0;
+
+double pastKr = 0;
+double valueKr = 0;
 portMUX_TYPE mux = portMUX_INITIALIZER_UNLOCKED;
 
+double* values[6] = {&valueLh, &valueLv, &valueRh, &valueRv, &valueKl, &valueKr};
+
 //Reciever/comms
-Reciever* rc = new Reciever(&valueLh, &valueLv, &valueRh, &valueRv);
+Reciever* rc = new Reciever(values);
 //Motor system controls
-FlightController* flight;
+MotorController* flight;
+Drone* drone;
 Servo motA, motB, motC, motD;
 Servo motors[4]; 
 // ---------------------------------------------------------------------------
@@ -82,6 +97,32 @@ void changeLv(){
   }
   portEXIT_CRITICAL_ISR(&mux);
 }
+
+void changeKl(){
+  portENTER_CRITICAL_ISR(&mux);
+  double temp = esp_timer_get_time() - pastKl;
+  if(digitalRead(34) == LOW){
+    if(temp > 950 && temp < 2100){
+	    valueKl = temp;
+    }
+  }else{
+    pastKl = esp_timer_get_time();
+  }
+  portEXIT_CRITICAL_ISR(&mux);
+}
+
+void changeKr(){
+  portENTER_CRITICAL_ISR(&mux);
+  double temp = esp_timer_get_time() - pastKr;
+  if(digitalRead(35) == LOW){
+    if(temp > 950 && temp < 2100){
+	    valueKr = temp;
+    }
+  }else{
+    pastKr = esp_timer_get_time();
+  }
+  portEXIT_CRITICAL_ISR(&mux);
+}
 //---------------------------------------------------------------------------
 
 /**
@@ -89,6 +130,8 @@ void changeLv(){
  */
 void setup() {
     Serial.begin(115200);
+    Serial.println("Booting");
+  
     motA.attach(UPPER_LEFT_MOTOR, MIN_PULSE_LENGTH, MAX_PULSE_LENGTH);
     motB.attach(UPPER_RIGHT_MOTOR, MIN_PULSE_LENGTH, MAX_PULSE_LENGTH);
     motC.attach(LOWER_LEFT_MOTOR, MIN_PULSE_LENGTH, MAX_PULSE_LENGTH);
@@ -98,8 +141,8 @@ void setup() {
     motors[1]= motB;
     motors[2]= motC;
     motors[3]= motD;
-    flight = new FlightController(rc, motors);
-
+    flight = new MotorController(motors);
+    drone  = new Drone(flight, rc);
     //Attach interrupts for the reciever
     pinMode(25, INPUT_PULLUP);
     attachInterrupt(digitalPinToInterrupt(25), changeRh, CHANGE);
@@ -109,18 +152,24 @@ void setup() {
     attachInterrupt(digitalPinToInterrupt(27), changeLh, CHANGE);
     pinMode(14, INPUT_PULLUP);
     attachInterrupt(digitalPinToInterrupt(14), changeLv, CHANGE);
+    pinMode(34, INPUT_PULLUP);
+    attachInterrupt(digitalPinToInterrupt(34), changeKl, CHANGE);
+    pinMode(35, INPUT_PULLUP);
+    attachInterrupt(digitalPinToInterrupt(35), changeKr, CHANGE);
 
     //Start up ESC's 
-    motA.writeMicroseconds(2000); 
-    motB.writeMicroseconds(2000); 
-    motC.writeMicroseconds(2000); 
-    motD.writeMicroseconds(2000); 
+    delay(5000);
+    motors[0].writeMicroseconds(2000); 
+    motors[1].writeMicroseconds(2000); 
+    motors[2].writeMicroseconds(2000); 
+    motors[3].writeMicroseconds(2000); 
+    delay(3000);
+    motors[0].writeMicroseconds(1000); 
+    motors[1].writeMicroseconds(1000); 
+    motors[2].writeMicroseconds(1000); 
+    motors[3].writeMicroseconds(1000); 
     delay(2000);
-    motA.writeMicroseconds(1000); 
-    motB.writeMicroseconds(1000); 
-    motC.writeMicroseconds(1000); 
-    motD.writeMicroseconds(1000); 
-    delay(1000);
+    Serial.println("Setup completed");
 }
 
 
@@ -128,7 +177,5 @@ void setup() {
  * Loop: Read input and execute instruction
  */
 void loop() {
-	flight->loop();
-	rc->print();
+	drone->loop();
 }
-

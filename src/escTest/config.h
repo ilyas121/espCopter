@@ -6,4 +6,3 @@
 #define UPPER_RIGHT_MOTOR 17
 #define LOWER_LEFT_MOTOR 18
 #define LOWER_RIGHT_MOTOR 19
-#define USE_IMU true
