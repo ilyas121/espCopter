@@ -73,12 +73,14 @@ void Drone::fastLoop() {
 	Serial.print(data[3]);
 	Serial.println(".");
 
-	pidController[0] -= 1500;
-	pidController[2] -= 1500;
-	pidController[3] -= 1500;
+	data[0] -= 1500;
+	data[2] -= 1500;
+	data[3] -= 1500;
 
-	pidController[0] *= 20/500;
-	pidController[2] *= 20/500;
-	pidController[3] *= 20/500;
+	data[0] *= 20/500;
+	data[2] *= 20/500;
+	data[3] *= 20/500;
+
+       
 	
 }
