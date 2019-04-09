@@ -23,6 +23,7 @@ private:
 	double imuValues[12];
 	double controlX, controlY, controlZ;
 	double setX, setY, setZ;
+	double output[4] = {0, 0, 0, 0};
 	double xK[3] = {2, 5, 1};
 	double yK[3] = {2, 5, 1};
 	double zK[3] = {2, 5, 1};

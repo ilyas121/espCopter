@@ -38,6 +38,7 @@ Reciever* rc = new Reciever(values);
 //Motor system controls
 MotorController* flight;
 Drone* drone;
+int startup = 0;
 Servo motA, motB, motC, motD;
 Servo motors[4]; 
 // ---------------------------------------------------------------------------
@@ -158,7 +159,6 @@ void setup() {
     attachInterrupt(digitalPinToInterrupt(35), changeKr, CHANGE);
 
     //Start up ESC's 
-    delay(5000);
     motors[0].writeMicroseconds(2000); 
     motors[1].writeMicroseconds(2000); 
     motors[2].writeMicroseconds(2000); 
@@ -177,5 +177,21 @@ void setup() {
  * Loop: Read input and execute instruction
  */
 void loop() {
-	drone->loop();
+	if(startup == 2){
+	    drone->loop();
+	}else if(*values[4]>1500 && *values[5] > 1000 && startup == 0){
+	    motors[0].writeMicroseconds(2000); 
+	    motors[1].writeMicroseconds(2000); 
+	    motors[2].writeMicroseconds(2000); 
+	    motors[3].writeMicroseconds(2000); 
+	    delay(3000);
+	    motors[0].writeMicroseconds(1000); 
+	    motors[1].writeMicroseconds(1000); 
+	    motors[2].writeMicroseconds(1000); 
+	    motors[3].writeMicroseconds(1000); 
+	    delay(2000);
+	    startup = 1;
+	}else if(*values[4]>1500 && *values[5] > 1500 && startup == 1){
+	    startup = 2; 
+	}
 }
