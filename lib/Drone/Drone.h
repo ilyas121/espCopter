@@ -21,14 +21,14 @@ private:
 
 	double rcValues[6];
 	double imuValues[12];
-	double controlX, controlY, controlZ;
-	double setX, setY, setZ;
+	double velControlX, velControlY, velControlZ;
 	double output[4] = {0, 0, 0, 0};
-	double xK[3] = {2, 5, 1};
-	double yK[3] = {2, 5, 1};
-	double zK[3] = {2, 5, 1};
-	
-	DPID* pidControllers[3];
+	double xK[3] = {3, 0.2, 2};
+	double yK[3] = {3, 0.2, 2};
+	double zK[3] = {3, 0.2, 2};
+        double velSetpoints[3] = {0, 0, 0};	
+	DPID* velControllers[3];
+	DPID* posControllers[3];
 
 	void printAll();
 	// This should be run every loop and is internally gated for fast opperation
