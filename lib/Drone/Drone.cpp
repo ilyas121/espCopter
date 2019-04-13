@@ -50,9 +50,9 @@ void Drone::setup() {
 	controlZ = 0;
 
 	//Roll = 0 Pitch = 1 Yaw = 2
-	pidControllers[1] = new VPID(&imuValues[5], &controlY, yK[0], yK[1], yK[2]);
-	pidControllers[0] = new VPID(&imuValues[4], &controlZ, zK[0], zK[1], yK[2]);
-	pidControllers[2] = new VPID(&imuValues[3], &controlX, xK[0], xK[1], xK[2]);
+	pidControllers[1] = new DPID(&imuValues[5], &controlY, yK[0], yK[1], yK[2]);
+	pidControllers[0] = new DPID(&imuValues[4], &controlZ, zK[0], zK[1], yK[2]);
+	pidControllers[2] = new DPID(&imuValues[3], &controlX, xK[0], xK[1], xK[2]);
 	controller->attachControllers(output);
 }
 

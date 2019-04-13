@@ -28,7 +28,7 @@ private:
 	double yK[3] = {2, 5, 1};
 	double zK[3] = {2, 5, 1};
 	
-	VPID* pidControllers[3];
+	DPID* pidControllers[3];
 
 	void printAll();
 	// This should be run every loop and is internally gated for fast opperation

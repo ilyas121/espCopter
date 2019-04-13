@@ -1,6 +1,6 @@
-#ifndef VPID_H
-#define VPID_H
-class VPID{
+#ifndef DPID_H
+#define DPID_H
+class DPID{
 	public:
 		//Tuneable parameters
 		double k[3];
@@ -17,6 +17,6 @@ class VPID{
 		double* output;
 		void calculate();
 		void setSetpoint(double newSet);
-		VPID(double* in, double* out, double kp, double ki, double kd);
+		DPID(double* in, double* out, double kp, double ki, double kd);
 };
 #endif
