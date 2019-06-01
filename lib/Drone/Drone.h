@@ -26,7 +26,7 @@ private:
 	double xK[3] = {3, 0.2, 2};
 	double yK[3] = {3, 0.2, 2};
 	double zK[3] = {3, 0.2, 2};
-        double velSetpoints[3] = {0, 0, 0};	
+    double velSetpoints[3] = {0, 0, 0};	
 	DPID* velControllers[3];
 	DPID* posControllers[3];
 

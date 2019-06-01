@@ -85,12 +85,12 @@ void Drone::fastLoop() {
 	rcValues[0] /= 3;
 	rcValues[2] /= 3;
 	rcValues[3] /= 3; 
-	
+/**	
 	//Calculating required velocity
 	posControllers[0]->calculate();
 	posControllers[1]->calculate();
 	posControllers[2]->calculate();
-
+**/
 	//Set the required velocity
 	velControllers[0]->setSetpoint(velSetpoints[0]);
 	velControllers[1]->setSetpoint(velSetpoints[1]);
@@ -107,6 +107,7 @@ void Drone::fastLoop() {
 	output[3] = rcValues[1] + velControlY + velControlZ + velControlX; //Calculate the pulse for esc 2 (rear-right - CW)
 
 	controller->loop();
+    delay(100);
    /** 
 	output[0] = rcValues[1] - pid_output_pitch - pid_output_roll + pid_output_yaw; //Calculate the pulse for esc 4 (front-left - CW)
 	output[1] = rcValues[1] - pid_output_pitch + pid_output_roll - pid_output_yaw; //Calculate the pulse for esc 1 (front-right - CCW)
