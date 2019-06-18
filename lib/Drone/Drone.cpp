@@ -101,10 +101,10 @@ void Drone::fastLoop() {
 	velControllers[1]->calculate();
 	velControllers[2]->calculate();
 	
-	output[0] = rcValues[1] - velControlY - velControlZ + velControlX; //Calculate the pulse for esc 4 (front-left - CW)
-	output[1] = rcValues[1] - velControlY + velControlZ - velControlX; //Calculate the pulse for esc 1 (front-right - CCW)
-	output[2] = rcValues[1] + velControlY - velControlZ - velControlX; //Calculate the pulse for esc 3 (rear-left - CCW)
-	output[3] = rcValues[1] + velControlY + velControlZ + velControlX; //Calculate the pulse for esc 2 (rear-right - CW)
+	output[0] = rcValues[1] + velControlY + velControlZ - velControlX; //Calculate the pulse for esc 4 (front-left - CW)
+	output[1] = rcValues[1] + velControlY - velControlZ + velControlX; //Calculate the pulse for esc 1 (front-right - CCW)
+	output[2] = rcValues[1] - velControlY + velControlZ + velControlX; //Calculate the pulse for esc 3 (rear-left - CCW)
+	output[3] = rcValues[1] - velControlY - velControlZ - velControlX; //Calculate the pulse for esc 2 (rear-right - CW)
 
 	controller->loop();
     delay(100);
