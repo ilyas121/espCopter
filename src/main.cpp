@@ -181,8 +181,9 @@ void setup() {
 void loop() {
     switch(droneState){
         case(HomeAllSwitches):
-            if(valueKl > 1400 || valueKr > 1400){
+            if(valueKl < 1400 || valueKr < 1400){
                 Serial.println("Please home all switches up");
+                Serial.println("ValueKl: " + String(valueKl) + "ValueKr" + String(valueKr));
             }
             else{
                 Serial.println("SWITCHES HOMED");
@@ -195,19 +196,23 @@ void loop() {
                         droneState = StartMission;
                         pastState = HomeAllSwitches;
                         break;
+                    case(StartMission):
+                        break;
                     default:
                         while(1){
                             Serial.println("Don goofed boi, check HomeAllSwitches state machine");
+                            delay(100);
                         }
                         break;
                 }
             }
             break;
         case(ArmESC):
-            if(valueKl > 1400){
-                droneState = HomeAllSwitches;
+            Serial.println("ARM ESC");
+            if(valueKl < 1400){
+                droneState = StartMission;
                 pastState = ArmESC;
-            }else if(valueKr > 1400){
+            }else if(valueKr < 1400){
                 droneState = HomeAllSwitches;
                 pastState = ArmESC;
                 //Start up ESC's 
@@ -222,10 +227,15 @@ void loop() {
                 motors[3].writeMicroseconds(1000); 
                 delay(2000);
                 Serial.println("Setup completed");
+                droneState = StartMission;
             }else{
                 Serial.println("Choose whether to arm the esc's or not");
+                delay(100);
             }
+            break;
         case(StartMission):
+            //Serial.println("STARTING MISSION");
+            pastState = StartMission;
             drone->loop();
             break;
     }

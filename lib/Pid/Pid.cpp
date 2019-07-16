@@ -19,6 +19,12 @@ void DPID::calculate(){
 	if(error <= 0.19 && error >= -0.19){
 		error = 0;
 	}
+    else if(error > 180){
+        error -= 360;
+    }
+    else if(error < -180){
+        error += 360;
+    }
 	kiError += k[1] * error;
 	if(kiError > max)kiError = max;
 	else if(kiError < max * -1)kiError = min * -1;
@@ -27,7 +33,7 @@ void DPID::calculate(){
 		kiError = 0;
 	}
 
-	double tempOutput = k[0] * error + kiError + k[2] * (error - lastError);
+	double tempOutput = k[0] * error + kiError + (k[2] * (error - lastError) / 100);
         if(tempOutput > max)tempOutput = max;
         else if(tempOutput < max * -1)tempOutput = tempOutput * -1;
 

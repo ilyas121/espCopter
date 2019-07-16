@@ -6,15 +6,16 @@ void Drone::loop() {
 		sensor->loop();
            }   
 	   sensor->getData(imuValues);
-	   Serial.println("Euler: " + String(imuValues[3]) + ", "  + String(imuValues[4]) + ", " +  String(imuValues[5]));
+//	   Serial.println("Euler: " + String(imuValues[9]) + ", "  + String(imuValues[10]) + ", " +  String(imuValues[11]));
 	   rc->getData(rcValues);
-	   rc->print();
+	   //rc->print();
 	   fastLoop();  
 	}
         delay(100);
-	Serial.println("Pid Z Output: " + String(velControlZ));
+	//Serial.println("Pid Z Output: " + String(velControlZ));
 	Serial.println("Pid Y Output: " + String(velControlY));
-	Serial.println("Pid X Output: " + String(velControlX));
+    delay(100);
+	//Serial.println("Pid X Output: " + String(velControlX));
 }
 
 Drone::Drone(MotorController* mc, Reciever* r){ 
@@ -50,14 +51,14 @@ void Drone::setup() {
 	velControlY = 0;
 	velControlZ = 0;
 
-	//Roll = 0 Pitch = 1 Yaw = 2
-	velControllers[0] = new DPID(&imuValues[4], &velControlZ, zK[0], zK[1], yK[2]);
-	velControllers[1] = new DPID(&imuValues[5], &velControlY, yK[0], yK[1], yK[2]);
-	velControllers[2] = new DPID(&imuValues[3], &velControlX, xK[0], xK[1], xK[2]);
+	//Roll = 1 Pitch = 2 Yaw = 0
+	velControllers[0] = new DPID(&imuValues[9], &velControlX, xK[0], xK[1], xK[2]);
+	velControllers[1] = new DPID(&imuValues[10], &velControlY, yK[0], yK[1], yK[2]);
+	velControllers[2] = new DPID(&imuValues[11], &velControlZ, zK[0], zK[1], yK[2]);
 	
-	posControllers[0] = new DPID(&imuValues[10], &velSetpoints[0], zK[0], zK[1], yK[2]);
-	posControllers[1] = new DPID(&imuValues[11], &velSetpoints[1], yK[0], yK[1], yK[2]);
-	posControllers[2] = new DPID(&imuValues[9], &velSetpoints[2], xK[0], xK[1], xK[2]);
+	posControllers[0] = new DPID(&imuValues[9], &velSetpoints[0], xK[0], xK[1], xK[2]);
+	posControllers[1] = new DPID(&imuValues[10], &velSetpoints[1], yK[0], yK[1], yK[2]);
+	posControllers[2] = new DPID(&imuValues[11], &velSetpoints[2], zK[0], zK[1], yK[2]);
 
 
 	
@@ -65,9 +66,9 @@ void Drone::setup() {
 }
 
 void Drone::fastLoop() { 
-	Serial.println("Getting Data");
+//	Serial.println("Getting Data");
 	rc->getData(rcValues);
-	Serial.println("Done getting data");
+/**	Serial.println("Done getting data");
 	Serial.print("Values: ");
 	Serial.print(rcValues[0]);
 	Serial.print(", ");
@@ -76,7 +77,7 @@ void Drone::fastLoop() {
 	Serial.print(rcValues[2]);
 	Serial.print(", ");
 	Serial.print(rcValues[3]);
-	Serial.println(".");
+	Serial.println(".");**/
 	//Yaw = 0 - Roll = 2 - Pitch = 3  
 	rcValues[0] -= 1500;
 	rcValues[2] -= 1500;
@@ -100,16 +101,30 @@ void Drone::fastLoop() {
 	velControllers[0]->calculate();
 	velControllers[1]->calculate();
 	velControllers[2]->calculate();
-	
+	if(rcValues[1] < 1030){
+        output[0] = 1000;
+        output[1] = 1000;
+        output[2] = 1000;
+        output[3] = 1000;
+    }else{
+        output[0] = rcValues[1] - velControlY; 
+        output[1] = rcValues[1] + velControlY; 
+        output[2] = rcValues[1] - velControlY; 
+        output[3] = rcValues[1] + velControlY; 
+    }
+	controller->loop();
+   /** 
+	output[0] = rcValues[1] - velControlY - velControlZ + velControlX; 
+	output[1] = rcValues[1] + velControlY - velControlZ - velControlX; 
+	output[2] = rcValues[1] - velControlY + velControlZ - velControlX; 
+	output[3] = rcValues[1] + velControlY + velControlZ + velControlX; 
+
 	output[0] = rcValues[1] + velControlY + velControlZ - velControlX; //Calculate the pulse for esc 4 (front-left - CW)
 	output[1] = rcValues[1] + velControlY - velControlZ + velControlX; //Calculate the pulse for esc 1 (front-right - CCW)
 	output[2] = rcValues[1] - velControlY + velControlZ + velControlX; //Calculate the pulse for esc 3 (rear-left - CCW)
 	output[3] = rcValues[1] - velControlY - velControlZ - velControlX; //Calculate the pulse for esc 2 (rear-right - CW)
-
-	controller->loop();
-    delay(100);
-   /** 
-	output[0] = rcValues[1] - pid_output_pitch - pid_output_roll + pid_output_yaw; //Calculate the pulse for esc 4 (front-left - CW)
+	
+    output[0] = rcValues[1] - pid_output_pitch - pid_output_roll + pid_output_yaw; //Calculate the pulse for esc 4 (front-left - CW)
 	output[1] = rcValues[1] - pid_output_pitch + pid_output_roll - pid_output_yaw; //Calculate the pulse for esc 1 (front-right - CCW)
 	output[2] = rcValues[1] + pid_output_pitch - pid_output_roll - pid_output_yaw; //Calculate the pulse for esc 3 (rear-left - CCW)
 	output[3] = rcValues[1] + pid_output_pitch + pid_output_roll + pid_output_yaw; //Calculate the pulse for esc 2 (rear-right - CW)**/

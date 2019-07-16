@@ -23,9 +23,9 @@ private:
 	double imuValues[12];
 	double velControlX, velControlY, velControlZ;
 	double output[4] = {0, 0, 0, 0};
-	double xK[3] = {3, 0, 0};
-	double yK[3] = {3, 0, 0};
-	double zK[3] = {3, 0, 0};
+	double xK[3] = {0, 0, 0};
+	double yK[3] = {12, 0.00, 0};
+	double zK[3] = {0, 0.00, 0};
     double velSetpoints[3] = {0, 0, 0};	
 	DPID* velControllers[3];
 	DPID* posControllers[3];
