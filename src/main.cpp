@@ -184,6 +184,7 @@ void loop() {
             if(valueKl < 1400 || valueKr < 1400){
                 Serial.println("Please home all switches up");
                 Serial.println("ValueKl: " + String(valueKl) + "ValueKr" + String(valueKr));
+		delay(100);
             }
             else{
                 Serial.println("SWITCHES HOMED");

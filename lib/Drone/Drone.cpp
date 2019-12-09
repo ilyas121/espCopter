@@ -6,7 +6,8 @@ void Drone::loop() {
 		sensor->loop();
            }   
 	   sensor->getData(imuValues);
-//	   Serial.println("Euler: " + String(imuValues[9]) + ", "  + String(imuValues[10]) + ", " +  String(imuValues[11]));
+	   Serial.println("Euler: " + String(imuValues[9]) + ", "  + String(imuValues[10]) + ", " +  String(imuValues[11]));
+	   delay(100);
 	   rc->getData(rcValues);
 	   //rc->print();
 	   fastLoop();  
@@ -110,7 +111,7 @@ void Drone::fastLoop() {
         output[0] = rcValues[1] - velControlY; 
         output[1] = rcValues[1] + velControlY; 
         output[2] = rcValues[1] - velControlY; 
-        output[3] = rcValues[1] + velControlY; 
+        output[3] = rcValues[1] + velControlY;
     }
 	controller->loop();
    /** 
