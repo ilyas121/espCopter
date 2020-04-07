@@ -9,7 +9,11 @@
 #define UPPER_RIGHT_MOTOR 16
 #define LOWER_LEFT_MOTOR 19
 #define LOWER_RIGHT_MOTOR 17
+
 #define USE_IMU false
+
+#define PID_DATA_GET_PORT 1234
+#define IMU_EULER GET_PORT 6969
 
 extern const char* loginIndex;
 extern const char* serverIndex;
