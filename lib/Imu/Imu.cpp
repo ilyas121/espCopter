@@ -2,7 +2,7 @@
 #include "Imu.h"
 
 void Imu::loop() {
-	Serial.println("IMU LOOP");
+	//Serial.println("IMU LOOP");
 	if (!started)
 		return;
 	imu::Vector<3> a;
@@ -41,7 +41,7 @@ void Imu::loop() {
 	if (updateIndex == 4) {
 		updateIndex = 0;
 	}
-	print();
+	//print();
 }
 
 void Imu::startSensor(Adafruit_BNO055 * _bno) {

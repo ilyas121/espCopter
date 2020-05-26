@@ -35,10 +35,16 @@ void DPID::calculate(){
 
 	double tempOutput = k[0] * error + kiError + (k[2] * (error - lastError) / 100);
         if(tempOutput > max)tempOutput = max;
-        else if(tempOutput < max * -1)tempOutput = tempOutput * -1;
+        else if(tempOutput < max * -1)tempOutput = max * -1;
 
 	*output = tempOutput;
 	lastError = error;
+}
+
+void DPID::setConstants(double p, double i, double d){
+	k[0] = p;
+	k[1] = i;
+	k[2] = d;
 }
 
 

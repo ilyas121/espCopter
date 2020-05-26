@@ -2,6 +2,7 @@
 # for messages from the ESP32 board and prints them
 import socket
 import sys
+import struct
 
 try :
     s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
@@ -26,6 +27,18 @@ while 1:
         break
 
     print data.strip()
-    sendBoi = s.sendto("K".encode(), d[1])
+    x1 = raw_input("Enter x1: ")
+    k = x1.split(" ")
+    p = float(k[0])
+    i = float(k[1])
+    d2 = float(k[2])
+    print(p)
+    print(i)
+    print(d)
+    byte1 = bytearray(struct.pack("d", p))
+    byte2 = bytearray(struct.pack("d", i))
+    byte3 = bytearray(struct.pack("d", d2))
+    data2 = byte1 + byte2 + byte3
+    sendBoi = s.sendto(data2, d[1])
 
 s.close()

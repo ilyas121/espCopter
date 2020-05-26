@@ -45,6 +45,7 @@ public:
 	Drone(MotorController* mc, Reciever* r);
 	// Pulse the loop function from the main thread
 	void loop();
+	void setConstants(double p, double i, double d);
 };
 
 #endif

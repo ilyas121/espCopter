@@ -13,8 +13,10 @@
 #include <WiFiClient.h>
 #include <WebServer.h>
 #include <Update.h>
-// ---------------------------------------------------------------------------
-//Globals
+#include "PIDComm.h"
+
+// // ---------------------------------------------------------------------------
+// //Globals
 
 enum State
 {
@@ -54,6 +56,7 @@ Reciever* rc = new Reciever(values);
 //Motor system controls
 MotorController* flight;
 Drone* drone;
+PIDComm* com;
 int startup = 0;
 Servo motA, motB, motC, motD;
 Servo motors[4]; 
@@ -215,6 +218,7 @@ void setup() {
     attachInterrupt(digitalPinToInterrupt(35), changeKr, CHANGE);
 
     droneState = HomeAllSwitches;
+    com = new PIDComm(1234, drone);
 }
 
 
@@ -282,6 +286,8 @@ void loop() {
             //Serial.println("STARTING MISSION");
             pastState = StartMission;
             drone->loop();
+            com->loop();
             break;
     }
+    
 }

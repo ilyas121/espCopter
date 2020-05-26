@@ -17,6 +17,7 @@ class DPID{
 		double* output;
 		void calculate();
 		void setSetpoint(double newSet);
+		void setConstants(double p, double i, double d);
 		DPID(double* in, double* out, double kp, double ki, double kd);
 };
 #endif

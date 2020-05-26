@@ -3,21 +3,21 @@
 
 //Main loop that gets called outside of the class
 void Drone::loop() {
+	//Serial.println("Started a drone loop");
 	if(started == true){
 	   if(USE_IMU == true){
 		sensor->loop();
         }   
 	   sensor->getData(imuValues);
-	   Serial.println("Euler: " + String(imuValues[9]) + ", "  + String(imuValues[10]) + ", " +  String(imuValues[11]));
-	   delay(100);
+	   //Serial.println("Euler: " + String(imuValues[9]) + ", "  + String(imuValues[10]) + ", " +  String(imuValues[11]));
+	   //delay(100);
 	   rc->getData(rcValues);
 	   //rc->print();
+	   //Serial.println("Starting fast loop");
 	   fastLoop();  
 	}
-        delay(100);
-	//Serial.println("Pid Z Output: " + String(velControlZ));
-	Serial.println("Pid Y Output: " + String(velControlY));
-    delay(100);
+	//Serial.println("Pid Y Output: " + String(velControlY));
+    //delay(1000);
 	//Serial.println("Pid X Output: " + String(velControlX));
 }
 
@@ -93,23 +93,13 @@ void Drone::fastLoop() {
 	velControllers[0]->calculate();
 	velControllers[1]->calculate();
 	velControllers[2]->calculate();
-	if(rcValues[1] < 1030){
-        output[0] = 1000;
-        output[1] = 1000;
-        output[2] = 1000;
-        output[3] = 1000;
-    }else{
-        output[0] = rcValues[1] - velControlY; 
-        output[1] = rcValues[1] + velControlY; 
-        output[2] = rcValues[1] - velControlY; 
-        output[3] = rcValues[1] + velControlY;
-    }
-   /** 
-	output[0] = rcValues[1] - velControlY - velControlZ + velControlX; 
-	output[1] = rcValues[1] + velControlY - velControlZ - velControlX; 
-	output[2] = rcValues[1] - velControlY + velControlZ - velControlX; 
-	output[3] = rcValues[1] + velControlY + velControlZ + velControlX; 
-
+   
+	output[0] = rcValues[1] - velControlY - velControlZ;// + velControlX; 
+	output[1] = rcValues[1] + velControlY - velControlZ;// - velControlX; 
+	output[2] = rcValues[1] - velControlY + velControlZ;// - velControlX; 
+	output[3] = rcValues[1] + velControlY + velControlZ;// + velControlX; 
+	
+/**
 	output[0] = rcValues[1] + velControlY + velControlZ - velControlX; //Calculate the pulse for esc 4 (front-left - CW)
 	output[1] = rcValues[1] + velControlY - velControlZ + velControlX; //Calculate the pulse for esc 1 (front-right - CCW)
 	output[2] = rcValues[1] - velControlY + velControlZ + velControlX; //Calculate the pulse for esc 3 (rear-left - CCW)
@@ -144,4 +134,12 @@ void Drone::getHumanInput(){
 	rcValues[0] /= 3;
 	rcValues[2] /= 3;
 	rcValues[3] /= 3; 
+}
+
+void Drone::setConstants(double p, double i, double d){	
+	velControllers[0]->setConstants(p,i,d);
+	velControllers[1]->setConstants(p,i,d);
+	velControllers[2]->setConstants(p,i,d);
+
+
 }
