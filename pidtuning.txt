@@ -1,0 +1,12 @@
+Roll/Pitch:
+Up D gain till oscillaions:
+- Bring number down by 25%
+
+Hands off here: 
+Up P gain in steps of 0.2 till oscillations:
+- Bring down by 50%
+Up I gain by steps of 0.01 till oscillations:
+- Bring down by 50%
+Up P Gain till fast oscillations
+
+
