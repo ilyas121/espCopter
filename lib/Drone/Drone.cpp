@@ -90,14 +90,18 @@ void Drone::fastLoop() {
 	velControllers[2]->setSetpoint(velSetpoints[2]);
 
 	//Calculating required output signal (thrust added to base throttle) needed 
-	velControllers[0]->calculate();
-	velControllers[1]->calculate();
-	velControllers[2]->calculate();
-   
-	output[0] = rcValues[1] - velControlY - velControlZ - velControlX; 
-	output[1] = rcValues[1] + velControlY - velControlZ + velControlX; 
-	output[2] = rcValues[1] - velControlY + velControlZ + velControlX; 
-	output[3] = rcValues[1] + velControlY + velControlZ - velControlX; 
+	
+    if(rcValues[1] >= 1015){
+		velControllers[0]->calculate();
+		velControllers[1]->calculate();
+		velControllers[2]->calculate();
+		output[0] = rcValues[1] - velControlY - velControlZ - velControlX; 
+		output[1] = rcValues[1] + velControlY - velControlZ + velControlX; 
+		output[2] = rcValues[1] - velControlY + velControlZ + velControlX; 
+		output[3] = rcValues[1] + velControlY + velControlZ - velControlX; 
+	}else{
+		output[0] = output[1] = output[2] = output[3] = 0;
+	}
 	
 /**
 	output[0] = rcValues[1] + velControlY + velControlZ - velControlX; //Calculate the pulse for esc 4 (front-left - CW)

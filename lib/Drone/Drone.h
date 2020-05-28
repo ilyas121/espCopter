@@ -25,8 +25,8 @@ private:
 	double velControlX = 0;
 	double velControlY = 0;
 	double velControlZ = 0;
-	double output[4] = {0, 0, 0, 0.2};
-	double xK[3] = {3, 0.00, 0.2};
+	double output[4] = {0, 0, 0, 0};
+	double xK[3] = {2, 0.01, 0};
 	double yK[3] = {0, 0.00, 0};
 	double zK[3] = {0, 0.00, 0};
     double velSetpoints[3] = {0, 0, 0};	
