@@ -94,10 +94,10 @@ void Drone::fastLoop() {
 	velControllers[1]->calculate();
 	velControllers[2]->calculate();
    
-	output[0] = rcValues[1] - velControlY - velControlZ;// + velControlX; 
-	output[1] = rcValues[1] + velControlY - velControlZ;// - velControlX; 
-	output[2] = rcValues[1] - velControlY + velControlZ;// - velControlX; 
-	output[3] = rcValues[1] + velControlY + velControlZ;// + velControlX; 
+	output[0] = rcValues[1] - velControlY - velControlZ - velControlX; 
+	output[1] = rcValues[1] + velControlY - velControlZ + velControlX; 
+	output[2] = rcValues[1] - velControlY + velControlZ + velControlX; 
+	output[3] = rcValues[1] + velControlY + velControlZ - velControlX; 
 	
 /**
 	output[0] = rcValues[1] + velControlY + velControlZ - velControlX; //Calculate the pulse for esc 4 (front-left - CW)
@@ -137,7 +137,7 @@ void Drone::getHumanInput(){
 }
 
 void Drone::setConstants(double p, double i, double d){	
-	velControllers[0]->setConstants(p,i,d);
+	//velControllers[0]->setConstants(p,i,d);
 	velControllers[1]->setConstants(p,i,d);
 	velControllers[2]->setConstants(p,i,d);
 
