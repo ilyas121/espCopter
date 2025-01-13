@@ -3,19 +3,23 @@
 void Drone::loop() {
 	if(started == true){
 	   if(USE_IMU == true){
-		sensor->loop();
-           }   
+			//BNO055 IMU sensor refreshes at 100hz 
+			if(micros() - lastImuUpdate > 1000){
+				lastImuUpdate = micros();
+				sensor->loop(); 
+			}
+        }   
 	   sensor->getData(imuValues);
-	   Serial.println("Euler: " + String(imuValues[9]) + ", "  + String(imuValues[10]) + ", " +  String(imuValues[11]));
-	   delay(100);
+		// Serial.println("Euler: " + String(imuValues[9]) + ", "  + String(imuValues[10]) + ", " +  String(imuValues[11]));
+		//    delay(100);
 	   rc->getData(rcValues);
 	   //rc->print();
 	   fastLoop();  
 	}
-        delay(100);
+        // delay(100);
 	//Serial.println("Pid Z Output: " + String(velControlZ));
-	Serial.println("Pid Y Output: " + String(velControlY));
-    delay(100);
+	// Serial.println("Pid Y Output: " + String(velControlY));
+    // delay(100);
 	//Serial.println("Pid X Output: " + String(velControlX));
 }
 
@@ -52,66 +56,69 @@ void Drone::setup() {
 	velControlY = 0;
 	velControlZ = 0;
 
+	//Red is front
 	//Roll = 1 Pitch = 2 Yaw = 0
-	velControllers[0] = new DPID(&imuValues[9], &velControlX, xK[0], xK[1], xK[2]);
-	velControllers[1] = new DPID(&imuValues[10], &velControlY, yK[0], yK[1], yK[2]);
-	velControllers[2] = new DPID(&imuValues[11], &velControlZ, zK[0], zK[1], yK[2]);
+	velControllers[0] = new DPID(&imuValues[9], &velControlX, xK[0], xK[1], xK[2]);//Yaw
+	velControllers[1] = new DPID(&imuValues[10], &velControlY, yK[0], yK[1], yK[2]);//Roll
+	velControllers[2] = new DPID(&imuValues[11], &velControlZ, zK[0], zK[1], yK[2]);//Pitch
 	
-	posControllers[0] = new DPID(&imuValues[9], &velSetpoints[0], xK[0], xK[1], xK[2]);
-	posControllers[1] = new DPID(&imuValues[10], &velSetpoints[1], yK[0], yK[1], yK[2]);
-	posControllers[2] = new DPID(&imuValues[11], &velSetpoints[2], zK[0], zK[1], yK[2]);
+	// posControllers[0] = new DPID(&imuValues[9], &velSetpoints[0], xK[0], xK[1], xK[2]);
+	// posControllers[1] = new DPID(&imuValues[10], &velSetpoints[1], yK[0], yK[1], yK[2]);
+	// posControllers[2] = new DPID(&imuValues[11], &velSetpoints[2], zK[0], zK[1], yK[2]);
 
-
-	
 	controller->attachControllers(output);
 }
 
 void Drone::fastLoop() { 
-//	Serial.println("Getting Data");
+	//EMERGENCY EXIT
+	if(imuValues[10] > 20 || imuValues[10] < -20 || imuValues[11] > 20 || imuValues[11] < -20){
+		while(true){
+			output[0] = 1000;
+			output[1] = 1000;
+			output[2] = 1000;
+			output[3] = 1000;
+			controller->loop();
+		}
+	}
+
+
 	rc->getData(rcValues);
-/**	Serial.println("Done getting data");
-	Serial.print("Values: ");
-	Serial.print(rcValues[0]);
-	Serial.print(", ");
-	Serial.print(rcValues[1]);
-	Serial.print(", ");
-	Serial.print(rcValues[2]);
-	Serial.print(", ");
-	Serial.print(rcValues[3]);
-	Serial.println(".");**/
-	//Yaw = 0 - Roll = 2 - Pitch = 3  
+	// printAll();
+	//RC Values Yaw = 0 - Roll = 2 - Pitch = 3  
 	rcValues[0] -= 1500;
 	rcValues[2] -= 1500;
 	rcValues[3] -= 1500;
 
-	rcValues[0] /= 3;
-	rcValues[2] /= 3;
-	rcValues[3] /= 3; 
-/**	
-	//Calculating required velocity
-	posControllers[0]->calculate();
-	posControllers[1]->calculate();
-	posControllers[2]->calculate();
-**/
+
+	//Vel Controller = Roll = 1 Pitch = 2 Yaw = 0
+	//RC Values Yaw = 0 - Roll = 2 - Pitch = 3  
+	//Set the setpoints for the controlllers
+	velSetpoints[0] = rcValues[0] * 365/500; //Yaw
+	velSetpoints[1] = rcValues[2] * 365/500; //Roll
+	velSetpoints[2] = rcValues[3] * 365/500; //Pitch
+
 	//Set the required velocity
-	velControllers[0]->setSetpoint(velSetpoints[0]);
-	velControllers[1]->setSetpoint(velSetpoints[1]);
-	velControllers[2]->setSetpoint(velSetpoints[2]);
+	velControllers[0]->setSetpoint(velSetpoints[0]); //Yaw
+	velControllers[1]->setSetpoint(velSetpoints[1]); //Roll
+	velControllers[2]->setSetpoint(velSetpoints[2]); //Pitch
 
 	//Calculating required output signal (thrust added to base throttle) needed 
-	velControllers[0]->calculate();
-	velControllers[1]->calculate();
-	velControllers[2]->calculate();
+	//Vel Controller = Roll = 1 Pitch = 2 Yaw = 0
+	velControllers[0]->calculate(); //Yaw
+	velControllers[1]->calculate(); //Roll
+	velControllers[2]->calculate(); //Pitch
+
 	if(rcValues[1] < 1030){
         output[0] = 1000;
         output[1] = 1000;
         output[2] = 1000;
         output[3] = 1000;
     }else{
-        output[0] = rcValues[1] - velControlY; 
-        output[1] = rcValues[1] + velControlY; 
-        output[2] = rcValues[1] - velControlY; 
-        output[3] = rcValues[1] + velControlY;
+		//Current Ouptut and Direction of spin
+		output[0] = rcValues[1] - velControlY - velControlZ + velControlX; //Front left - CCW
+		output[1] = rcValues[1] + velControlY - velControlZ - velControlX; //Front right - CW
+		output[2] = rcValues[1] - velControlY + velControlZ - velControlX; //Rear Left - CW
+		output[3] = rcValues[1] + velControlY + velControlZ + velControlX; //Rear right - CCW
     }
 	controller->loop();
    /** 
@@ -120,6 +127,7 @@ void Drone::fastLoop() {
 	output[2] = rcValues[1] - velControlY + velControlZ - velControlX; 
 	output[3] = rcValues[1] + velControlY + velControlZ + velControlX; 
 
+	//The direciton of spin is off for this drone
 	output[0] = rcValues[1] + velControlY + velControlZ - velControlX; //Calculate the pulse for esc 4 (front-left - CW)
 	output[1] = rcValues[1] + velControlY - velControlZ + velControlX; //Calculate the pulse for esc 1 (front-right - CCW)
 	output[2] = rcValues[1] - velControlY + velControlZ + velControlX; //Calculate the pulse for esc 3 (rear-left - CCW)
@@ -129,4 +137,33 @@ void Drone::fastLoop() {
 	output[1] = rcValues[1] - pid_output_pitch + pid_output_roll - pid_output_yaw; //Calculate the pulse for esc 1 (front-right - CCW)
 	output[2] = rcValues[1] + pid_output_pitch - pid_output_roll - pid_output_yaw; //Calculate the pulse for esc 3 (rear-left - CCW)
 	output[3] = rcValues[1] + pid_output_pitch + pid_output_roll + pid_output_yaw; //Calculate the pulse for esc 2 (rear-right - CW)**/
+}
+
+void Drone::printAll(){
+	delay(100);
+	Serial.println("---------- RC Values ---------");
+	Serial.print(rcValues[0]);
+	Serial.print(", ");
+	Serial.print(rcValues[1]);
+	Serial.print(", ");
+	Serial.print(rcValues[2]);
+	Serial.print(", ");
+	Serial.print(rcValues[3]);
+	Serial.println(".");
+
+	Serial.println("---------- IMU Values ---------");
+	Serial.print(imuValues[9]);
+	Serial.print(", ");
+	Serial.print(imuValues[10]);
+	Serial.print(", ");
+	Serial.print(imuValues[11]);
+	Serial.println(".");
+
+	Serial.println("---------- Vel Control ---------");
+	Serial.print(velControlX);
+	Serial.print(", ");
+	Serial.print(velControlY);
+	Serial.print(", ");
+	Serial.print(velControlZ);
+	Serial.println(".");
 }

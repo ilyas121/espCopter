@@ -2,7 +2,6 @@
 #include "Imu.h"
 
 void Imu::loop() {
-	Serial.println("IMU LOOP");
 	if (!started)
 		return;
 	imu::Vector<3> a;

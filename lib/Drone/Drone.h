@@ -19,13 +19,16 @@ private:
 	Reciever* rc; 
         double started = false;
 
+	//clock trackers 
+	int lastImuUpdate = 0;
+
 	double rcValues[6];
 	double imuValues[12];
 	double velControlX, velControlY, velControlZ;
 	double output[4] = {0, 0, 0, 0};
-	double xK[3] = {0, 0, 0};
-	double yK[3] = {12, 0.00, 0};
-	double zK[3] = {0, 0.00, 0};
+	double xK[3] = {0, 0, 0}; //Yaw
+	double yK[3] = {24, 0.00, 12}; //Roll
+	double zK[3] = {24, 0.00, 12}; //Pitch
     double velSetpoints[3] = {0, 0, 0};	
 	DPID* velControllers[3];
 	DPID* posControllers[3];

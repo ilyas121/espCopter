@@ -1,5 +1,8 @@
 # espCopter
 This is the code for a quadcopter controller using an ESP32
+Build Notes:
+- SCL is blue - pin 22 on esp32
+- SDA is purple - pin 21 on esp32
 
 To Do list: 
 - Figure out which motors are clockwise and which are counterclockwise

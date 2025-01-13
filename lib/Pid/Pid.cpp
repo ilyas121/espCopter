@@ -1,6 +1,7 @@
 #include "Pid.h"
 
 DPID::DPID(double* in, double* out, double kp, double ki, double kd){
+	//Ignoring ki for now
 	k[0] = kp;
 	k[1] = ki;
 	k[2] = kd;
@@ -16,26 +17,25 @@ void DPID::setSetpoint(double newSet){
 
 void DPID::calculate(){
 	double error = *input - setpoint;
-	if(error <= 0.19 && error >= -0.19){
-		error = 0;
-	}
-    else if(error > 180){
+    if(error > 180){
         error -= 360;
     }
     else if(error < -180){
         error += 360;
     }
-	kiError += k[1] * error;
-	if(kiError > max)kiError = max;
-	else if(kiError < max * -1)kiError = min * -1;
-      	
-	if((lastError > 0 && error <= 0) || (lastError < 0 && error >= 0)){
-		kiError = 0;
-	}
 
-	double tempOutput = k[0] * error + kiError + (k[2] * (error - lastError) / 100);
-        if(tempOutput > max)tempOutput = max;
-        else if(tempOutput < max * -1)tempOutput = tempOutput * -1;
+	currentTimeStamp = micros();
+	timeElapsed = currentTimeStamp - lastTimeStamp;
+	lastTimeStamp = currentTimeStamp;
+
+	double tempOutput = (k[0] * error) + kiError + (k[2] * ((error - lastError) / timeElapsed));
+
+	if(tempOutput > max){
+		tempOutput = max;
+	}
+	else if(tempOutput < max * -1){
+		tempOutput = (max * -1);
+	}	
 
 	*output = tempOutput;
 	lastError = error;

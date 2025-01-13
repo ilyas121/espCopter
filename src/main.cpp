@@ -184,7 +184,7 @@ void loop() {
             if(valueKl < 1400 || valueKr < 1400){
                 Serial.println("Please home all switches up");
                 Serial.println("ValueKl: " + String(valueKl) + "ValueKr" + String(valueKr));
-		delay(100);
+		            delay(100);
             }
             else{
                 Serial.println("SWITCHES HOMED");
@@ -218,13 +218,20 @@ void loop() {
                 pastState = ArmESC;
                 //Start up ESC's 
                 motors[0].writeMicroseconds(2000); 
+                delay(100);
                 motors[1].writeMicroseconds(2000); 
+                delay(100);
                 motors[2].writeMicroseconds(2000); 
+                delay(100);
                 motors[3].writeMicroseconds(2000); 
+                delay(100);
                 delay(3000);
                 motors[0].writeMicroseconds(1000); 
+                delay(100);
                 motors[1].writeMicroseconds(1000); 
+                delay(100);
                 motors[2].writeMicroseconds(1000); 
+                delay(100);
                 motors[3].writeMicroseconds(1000); 
                 delay(2000);
                 Serial.println("Setup completed");
@@ -235,9 +242,43 @@ void loop() {
             }
             break;
         case(StartMission):
-            //Serial.println("STARTING MISSION");
-            pastState = StartMission;
-            drone->loop();
+            static unsigned long start = 0;
+            static int samples = 0;
+            static unsigned long totalTime = 0;
+            static bool announced = false;
+            
+            // Check if throttle is above minimum AND left knob is in flight position
+            if (valueRv > 1100 && valueKl > 1400) {  // Both throttle active and armed
+                if (!announced) {
+                    Serial.println("Motors spinning - Starting timing measurements...");
+                    announced = true;
+                }
+                
+                if (samples < 200) {
+                    unsigned long loopStart = micros();
+                    drone->loop();
+                    unsigned long loopTime = micros() - loopStart;
+                    totalTime += loopTime;
+                    samples++;
+                } else if (samples == 200) {
+                    float avgTime = totalTime / 200.0;
+                    float frequency = 1000000.0 / avgTime;  // Convert to Hz
+                    Serial.println("Average loop time (microseconds): " + String(avgTime));
+                    Serial.println("Frequency (Hz): " + String(frequency));
+                    samples++; // Increment to prevent repeated printing
+                } else {
+                    drone->loop();  // Continue normal operation after measurements
+                }
+            } else {
+                // Reset measurements if conditions not met
+                if (announced) {
+                    Serial.println("Motors stopped - Resetting measurements");
+                    samples = 0;
+                    totalTime = 0;
+                    announced = false;
+                }
+                drone->loop();
+            }
             break;
     }
 }

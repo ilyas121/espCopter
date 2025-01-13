@@ -1,5 +1,6 @@
 #ifndef DPID_H
 #define DPID_H
+#include "Arduino.h"
 class DPID{
 	public:
 		//Tuneable parameters
@@ -8,9 +9,11 @@ class DPID{
 
 		//Output&Input Limits
 		double max = 400;
-		double min = 400;
 		double setpoint = 0;
 		double lastError;
+		unsigned long lastTimeStamp = 0; 
+		unsigned long currentTimeStamp =0;
+		unsigned long timeElapsed = 0;
 		double kiError;	
 		//References to external motors
 		double* input;
