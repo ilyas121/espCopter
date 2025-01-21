@@ -26,22 +26,25 @@ private:
 	double imuValues[12];
 	double velControlX, velControlY, velControlZ;
 	double output[4] = {0, 0, 0, 0};
-	double xK[3] = {0, 0, 0}; //Yaw
-	double yK[3] = {24, 0.00, 12}; //Roll
-	double zK[3] = {24, 0.00, 12}; //Pitch
+	double xK[3] = {0.0, 0.0, 0.0}; //Yaw
+	double yK[3] = {24.0, 0.0, 0.0}; //Roll
+	double zK[3] = {24.0, 0.0, 0.0}; //Pitch
     double velSetpoints[3] = {0, 0, 0};	
 	DPID* velControllers[3];
 	DPID* posControllers[3];
 
-	void printAll();
+	void printIO();
 	// This should be run every loop and is internally gated for fast opperation
 	void fastLoop();
 	// Internal setup function. set up all objects
 	void setup();
+	//This function is to update xK, yK, zK gains
 public:
 	Drone(MotorController* mc, Reciever* r);
 	// Pulse the loop function from the main thread
 	void loop();
+	void updateGain(double* gains);
+	void printGains();
 };
 
 #endif

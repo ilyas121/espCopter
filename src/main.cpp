@@ -9,16 +9,56 @@
 #include <ESPmDNS.h>
 #include <WiFiUdp.h>
 #include "ArduinoOTA.h"
+#include <BLEDevice.h>
+#include <BLEServer.h>
+#include <BLEUtils.h>
 
+// Add after other includes, before globals
+void handleBluetoothCommunication();
+
+            // if(SerialBT.available()){
+            //   Serial.println("Data available");
+            //   incomingData = SerialBT.readStringUntil('/n');
+            //   double gains[9] = {};
+            //   Serial.println("Running sscanf");
+            //   sscanf(incomingData.c_str(), "%lf, %lf, %lf, %lf, %lf, %lf, %lf, %lf, %lf", 
+            //       &gains[0], &gains[1], &gains[2],
+            //       &gains[3], &gains[4], &gains[5],
+            //       &gains[6], &gains[7], &gains[8]);
+            //   Serial.println("Updating gains");
+            //   drone->updateGain(gains);
+            //   delay(1000);
+            // }else{
 // ---------------------------------------------------------------------------
 //Globals
+BLEServer* pServer = nullptr;
+BLECharacteristic* pCharacteristic = nullptr;
+
+bool deviceConnected = false; 
+const char* serviceUUID = "421f18a3-506b-4b26-a754-d5c6e63723f6";
+const char* characteristicUUID = "6985c660-543d-4001-81ad-1cb746286478"; 
+
+class MyServerCallbacks: public BLEServerCallbacks{
+  void onConnect(BLEServer* pServer){
+    deviceConnected = true; 
+    Serial.println("Device Connected");
+  }
+
+  void onDisconnect(BLEServer* pServer){
+    deviceConnected = false; 
+    Serial.println("Device disconnected");
+  }
+};
+
+String incomingData;
 
 enum State
 {
    ArmESC,
    Idle,
    HomeAllSwitches,
-   StartMission
+   StartMission,
+   TESTAREA
 };
 
 State droneState = HomeAllSwitches;
@@ -145,7 +185,26 @@ void changeKr(){
 void setup() {
     Serial.begin(115200);
     Serial.println("Booting");
-  
+
+    //Create the device  
+    BLEDevice::init("ESP32_BLE");
+    //Create the server
+    pServer = BLEDevice::createServer();
+
+    //These are what are called when connected/disconnected
+    //There's another virtual function for doing actions based on what's connected
+    pServer->setCallbacks(new MyServerCallbacks());
+
+    BLEService *pService = pServer->createService(serviceUUID);  // Create a service
+    pCharacteristic = pService->createCharacteristic(
+        characteristicUUID,
+        BLECharacteristic::PROPERTY_NOTIFY | BLECharacteristic::PROPERTY_READ  // Set properties
+    );
+
+    pService->start(); 
+    pServer->getAdvertising() -> start(); 
+    Serial.println("BLE Server is ready to connect");
+
     motA.attach(UPPER_LEFT_MOTOR, MIN_PULSE_LENGTH, MAX_PULSE_LENGTH);
     motB.attach(UPPER_RIGHT_MOTOR, MIN_PULSE_LENGTH, MAX_PULSE_LENGTH);
     motC.attach(LOWER_LEFT_MOTOR, MIN_PULSE_LENGTH, MAX_PULSE_LENGTH);
@@ -157,6 +216,7 @@ void setup() {
     motors[3]= motD;
     flight = new MotorController(motors);
     drone  = new Drone(flight, rc);
+
     //Attach interrupts for the reciever
     pinMode(25, INPUT_PULLUP);
     attachInterrupt(digitalPinToInterrupt(25), changeRh, CHANGE);
@@ -171,7 +231,8 @@ void setup() {
     pinMode(35, INPUT_PULLUP);
     attachInterrupt(digitalPinToInterrupt(35), changeKr, CHANGE);
 
-    droneState = HomeAllSwitches;
+    // droneState = HomeAllSwitches;
+    droneState = TESTAREA;
 }
 
 
@@ -180,6 +241,9 @@ void setup() {
  */
 void loop() {
     switch(droneState){
+        case(TESTAREA):
+            handleBluetoothCommunication();
+            break;
         case(HomeAllSwitches):
             if(valueKl < 1400 || valueKr < 1400){
                 Serial.println("Please home all switches up");
@@ -218,22 +282,15 @@ void loop() {
                 pastState = ArmESC;
                 //Start up ESC's 
                 motors[0].writeMicroseconds(2000); 
-                delay(100);
                 motors[1].writeMicroseconds(2000); 
-                delay(100);
                 motors[2].writeMicroseconds(2000); 
-                delay(100);
                 motors[3].writeMicroseconds(2000); 
-                delay(100);
                 delay(3000);
                 motors[0].writeMicroseconds(1000); 
-                delay(100);
                 motors[1].writeMicroseconds(1000); 
-                delay(100);
                 motors[2].writeMicroseconds(1000); 
-                delay(100);
                 motors[3].writeMicroseconds(1000); 
-                delay(2000);
+                delay(3000);
                 Serial.println("Setup completed");
                 droneState = StartMission;
             }else{
@@ -281,4 +338,30 @@ void loop() {
             }
             break;
     }
+}
+
+void handleBluetoothCommunication() {
+    static unsigned long lastSendTime = 0;  // Track the last time data was sent
+    const unsigned long sendInterval = 1000;  // Send data every 1000 ms (1 second)
+
+    // Check if Bluetooth is connected
+    if (deviceConnected) {
+        Serial.println("BLE is connected.");
+
+        // Check if it's time to send data
+        if (millis() - lastSendTime >= sendInterval) {
+            lastSendTime = millis();  // Update the last send time
+
+            // Prepare the data to send
+            String dataToSend = "Hello from ESP32!";  // Replace with your actual data
+            pCharacteristic->setValue(dataToSend.c_str());
+            //What does notify do?
+            pCharacteristic->notify();
+            Serial.println("Sent data: " + dataToSend);  // Print to Serial Monitor for debugging
+        }
+    } else {
+        Serial.println("BLE is not connected.");
+    }
+
+    delay(100);  // Short delay to prevent overwhelming the loop
 }

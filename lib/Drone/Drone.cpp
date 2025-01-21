@@ -31,24 +31,24 @@ Drone::Drone(MotorController* mc, Reciever* r){
 }
 
 void Drone::setup() {
-        if(USE_IMU == true){ 
-	sensor = new Imu();
-	/* Initialise the sensor */
-	Serial.println("Setting up drone and sensors");	
-	if (!bno.begin()) {
-		/* There was a problem detecting the BNO055 ... check your connections */
-		Serial.print(
-				"Ooops, no BNO055 detected ... Check your wiring or I2C ADDR!");
-		delay(1000);
-		while (1)
-			;
-	}else{
-		Serial.println("BNO STARTED");
-	}
+	if(USE_IMU == true){ 
+		sensor = new Imu();
+		/* Initialise the sensor */
+		Serial.println("Setting up drone and sensors");	
+		// if (!bno.begin()) {
+		// 	/* There was a problem detecting the BNO055 ... check your connections */
+		// 	Serial.print(
+		// 			"Ooops, no BNO055 detected ... Check your wiring or I2C ADDR!");
+		// 	delay(1000);
+		// 	while (1)
+		// 		;
+		// }else{
+		// 	Serial.println("BNO STARTED");
+		// }
 
-	delay(1000);
-	bno.setExtCrystalUse(true);
-	sensor->startSensor(&bno);
+		delay(1000);
+		bno.setExtCrystalUse(true);
+		sensor->startSensor(&bno);
 	}
 	started = true;
 
@@ -71,31 +71,34 @@ void Drone::setup() {
 
 void Drone::fastLoop() { 
 	//EMERGENCY EXIT
-	if(imuValues[10] > 20 || imuValues[10] < -20 || imuValues[11] > 20 || imuValues[11] < -20){
-		while(true){
-			output[0] = 1000;
-			output[1] = 1000;
-			output[2] = 1000;
-			output[3] = 1000;
-			controller->loop();
-		}
-	}
+	// if(imuValues[10] > 20 || imuValues[10] < -20 || imuValues[11] > 20 || imuValues[11] < -20){
+	// 	while(true){
+	// 		output[0] = 1000;
+	// 		output[1] = 1000;
+	// 		output[2] = 1000;
+	// 		output[3] = 1000;
+	// 		controller->loop();
+	// 	}
+	// }
 
 
 	rc->getData(rcValues);
-	// printAll();
+	printIO();
 	//RC Values Yaw = 0 - Roll = 2 - Pitch = 3  
-	rcValues[0] -= 1500;
-	rcValues[2] -= 1500;
-	rcValues[3] -= 1500;
+	rcValues[0] -= 1500.0;
+	rcValues[2] -= 1500.0;
+	rcValues[3] -= 1500.0;
 
+	rcValues[0] *= 10.0/500.0;
+	rcValues[2] *= 10.0/500.0;
+	rcValues[3] *= 10.0/500.0;
 
 	//Vel Controller = Roll = 1 Pitch = 2 Yaw = 0
 	//RC Values Yaw = 0 - Roll = 2 - Pitch = 3  
 	//Set the setpoints for the controlllers
-	velSetpoints[0] = rcValues[0] * 365/500; //Yaw
-	velSetpoints[1] = rcValues[2] * 365/500; //Roll
-	velSetpoints[2] = rcValues[3] * 365/500; //Pitch
+	velSetpoints[0] = rcValues[0]*-1; //Yaw
+	velSetpoints[1] = rcValues[2]; //Roll
+	velSetpoints[2] = rcValues[3]*-1; //Pitch
 
 	//Set the required velocity
 	velControllers[0]->setSetpoint(velSetpoints[0]); //Yaw
@@ -139,7 +142,7 @@ void Drone::fastLoop() {
 	output[3] = rcValues[1] + pid_output_pitch + pid_output_roll + pid_output_yaw; //Calculate the pulse for esc 2 (rear-right - CW)**/
 }
 
-void Drone::printAll(){
+void Drone::printIO(){
 	delay(100);
 	Serial.println("---------- RC Values ---------");
 	Serial.print(rcValues[0]);
@@ -166,4 +169,42 @@ void Drone::printAll(){
 	Serial.print(", ");
 	Serial.print(velControlZ);
 	Serial.println(".");
+}
+
+void Drone::updateGain(double* gains){
+	xK[0] = gains[0];
+	xK[1] = gains[1];
+	xK[2] = gains[2];
+
+	yK[0] = gains[3];
+	yK[1] = gains[4];
+	yK[2] = gains[5];
+
+	yK[0] = gains[6];
+	yK[1] = gains[7];
+	yK[2] = gains[8];
+}
+
+void Drone::printGains(){
+	Serial.println("------PID GAINS------");
+	Serial.print("Xk: ");
+	Serial.print(xK[0]);
+	Serial.print(",");
+	Serial.print(xK[1]);
+	Serial.print(",");
+	Serial.println(xK[2]);
+
+	Serial.print("Yk: ");
+	Serial.print(yK[0]);
+	Serial.print(",");
+	Serial.print(yK[1]);
+	Serial.print(",");
+	Serial.println(yK[2]);
+
+	Serial.print("Zk: ");
+	Serial.print(zK[0]);
+	Serial.print(",");
+	Serial.print(zK[1]);
+	Serial.print(",");
+	Serial.println(zK[2]);
 }
