@@ -4,7 +4,7 @@
 class DPID{
 	public:
 		//Tuneable parameters
-		double k[3];
+		double* k[3];
 		double aggK[3];
 
 		//Output&Input Limits
@@ -20,6 +20,6 @@ class DPID{
 		double* output;
 		void calculate();
 		void setSetpoint(double newSet);
-		DPID(double* in, double* out, double kp, double ki, double kd);
+		DPID(double* in, double* out, double* kp, double* ki, double* kd);
 };
 #endif

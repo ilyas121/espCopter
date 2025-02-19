@@ -5,95 +5,76 @@
 #include "MotorController.h"
 #include "Imu.h"
 #include "Drone.h"
+
+#if USE_WEB
 #include <WiFi.h>
-#include <ESPmDNS.h>
-#include <WiFiUdp.h>
-#include "ArduinoOTA.h"
-#include <BLEDevice.h>
-#include <BLEServer.h>
-#include <BLEUtils.h>
+#include <WebSocketsServer.h>
+#include <ArduinoJson.h>
 
-// Add after other includes, before globals
-void handleBluetoothCommunication();
+// Forward declarations
+String formatDroneData();
+void webSocketEvent(uint8_t num, WStype_t type, uint8_t * payload, size_t length);
 
-            // if(SerialBT.available()){
-            //   Serial.println("Data available");
-            //   incomingData = SerialBT.readStringUntil('/n');
-            //   double gains[9] = {};
-            //   Serial.println("Running sscanf");
-            //   sscanf(incomingData.c_str(), "%lf, %lf, %lf, %lf, %lf, %lf, %lf, %lf, %lf", 
-            //       &gains[0], &gains[1], &gains[2],
-            //       &gains[3], &gains[4], &gains[5],
-            //       &gains[6], &gains[7], &gains[8]);
-            //   Serial.println("Updating gains");
-            //   drone->updateGain(gains);
-            //   delay(1000);
-            // }else{
-// ---------------------------------------------------------------------------
-//Globals
-BLEServer* pServer = nullptr;
-BLECharacteristic* pCharacteristic = nullptr;
+// WebSocket setup
+const char *ssid = "ESP32 Copter";
+const char *password = "12345678";
+WebSocketsServer webSocket(9090);
+StaticJsonDocument<1024> doc;
+unsigned long lastUpdate = 0;
+const int updateInterval = 33; // ~30Hz
+#endif
 
-bool deviceConnected = false; 
-const char* serviceUUID = "421f18a3-506b-4b26-a754-d5c6e63723f6";
-const char* characteristicUUID = "6985c660-543d-4001-81ad-1cb746286478"; 
-
-class MyServerCallbacks: public BLEServerCallbacks{
-  void onConnect(BLEServer* pServer){
-    deviceConnected = true; 
-    Serial.println("Device Connected");
-  }
-
-  void onDisconnect(BLEServer* pServer){
-    deviceConnected = false; 
-    Serial.println("Device disconnected");
-  }
-};
-
-String incomingData;
-
-enum State
-{
-   ArmESC,
-   Idle,
-   HomeAllSwitches,
-   StartMission,
-   TESTAREA
+// State Machine
+enum State {
+    ArmESC,
+    Idle,
+    HomeAllSwitches,
+    StartMission,
+    TESTAREA
 };
 
 State droneState = HomeAllSwitches;
 State pastState = HomeAllSwitches;
 
-
+// Receiver variables
 double pastRh = 0;
 double valueRh = 0;
-
 double pastRv = 0;
 double valueRv = 0;
-
 double pastLv = 0;
 double valueLv = 0;
-
 double pastLh = 0;
 double valueLh = 0;
-
 double pastKl = 0;
 double valueKl = 0;
-
 double pastKr = 0;
 double valueKr = 0;
 portMUX_TYPE mux = portMUX_INITIALIZER_UNLOCKED;
 
 double* values[6] = {&valueLh, &valueLv, &valueRh, &valueRv, &valueKl, &valueKr};
 
-//Reciever/comms
+// System components
 Reciever* rc = new Reciever(values);
-//Motor system controls
 MotorController* flight;
 Drone* drone;
 int startup = 0;
 Servo motA, motB, motC, motD;
-Servo motors[4]; 
+Servo motors[4];
+
+// Add at the top with other globals
+unsigned long loopStartTime;
+unsigned long loopEndTime;
+unsigned long loopCount = 0;
+unsigned long totalTime = 0;
+
+// Add these timing variables at the top with other globals
+struct LoopTiming {
+    unsigned long webSocketTime;
+    unsigned long droneTime;
+    unsigned long totalTime;
+    unsigned long count;
+} timing = {0, 0, 0, 0};
+
 // ---------------------------------------------------------------------------
 
 
@@ -101,13 +82,14 @@ Servo motors[4];
 //ISR Routines
 void changeRh(){
   portENTER_CRITICAL_ISR(&mux);
-  double temp = esp_timer_get_time()-pastRh;
+  unsigned long currentTime = esp_timer_get_time();
   if(digitalRead(25) == LOW){
-	if(temp > 950 && temp < 2100){
-		valueRh = temp;
-  	}
-  }else{
-	pastRh = esp_timer_get_time();	
+    double temp = currentTime - pastRh;
+    if(temp > 900 && temp < 2100){ // Slightly wider range
+      valueRh = temp;
+    }
+  } else {
+    pastRh = currentTime;
   }
   portEXIT_CRITICAL_ISR(&mux);
 }
@@ -151,7 +133,6 @@ void changeLv(){
   }
   portEXIT_CRITICAL_ISR(&mux);
 }
-
 void changeKl(){
   portENTER_CRITICAL_ISR(&mux);
   double temp = esp_timer_get_time() - pastKl;
@@ -164,7 +145,6 @@ void changeKl(){
   }
   portEXIT_CRITICAL_ISR(&mux);
 }
-
 void changeKr(){
   portENTER_CRITICAL_ISR(&mux);
   double temp = esp_timer_get_time() - pastKr;
@@ -182,28 +162,17 @@ void changeKr(){
 /**
  * Start serial, attach motors, and display the instructions and format
  */
+
+//Mac Address 67E05EFD-6F57-A683-D854-6B1E472AE099
 void setup() {
     Serial.begin(115200);
     Serial.println("Booting");
 
-    //Create the device  
-    BLEDevice::init("ESP32_BLE");
-    //Create the server
-    pServer = BLEDevice::createServer();
-
-    //These are what are called when connected/disconnected
-    //There's another virtual function for doing actions based on what's connected
-    pServer->setCallbacks(new MyServerCallbacks());
-
-    BLEService *pService = pServer->createService(serviceUUID);  // Create a service
-    pCharacteristic = pService->createCharacteristic(
-        characteristicUUID,
-        BLECharacteristic::PROPERTY_NOTIFY | BLECharacteristic::PROPERTY_READ  // Set properties
-    );
-
-    pService->start(); 
-    pServer->getAdvertising() -> start(); 
-    Serial.println("BLE Server is ready to connect");
+    #if USE_WEB
+    WiFi.softAP(ssid, password);
+    webSocket.begin();
+    webSocket.onEvent(webSocketEvent);
+    #endif
 
     motA.attach(UPPER_LEFT_MOTOR, MIN_PULSE_LENGTH, MAX_PULSE_LENGTH);
     motB.attach(UPPER_RIGHT_MOTOR, MIN_PULSE_LENGTH, MAX_PULSE_LENGTH);
@@ -231,19 +200,157 @@ void setup() {
     pinMode(35, INPUT_PULLUP);
     attachInterrupt(digitalPinToInterrupt(35), changeKr, CHANGE);
 
-    // droneState = HomeAllSwitches;
+    // Update PID gains
     droneState = TESTAREA;
 }
 
+#if USE_WEB
+// Only compile these functions if web is enabled
+String formatDroneData() {
+    doc.clear();
+    
+    // IMU Array
+    JsonArray imu = doc.createNestedArray("IMU");
+    imu.add(drone->getRoll());      // degrees
+    imu.add(drone->getPitch());     // degrees
+    imu.add(drone->getYaw());       // degrees
+    imu.add(drone->getRollVelocity());   // degrees/second
+    imu.add(drone->getPitchVelocity());  // degrees/second
+    imu.add(drone->getYawVelocity());    // degrees/second
+    // Add calibration values
+    imu.add(drone->getSystemCalibration());  // 0-3
+    imu.add(drone->getGyroCalibration());    // 0-3
+    imu.add(drone->getAccelCalibration());   // 0-3
+    imu.add(drone->getMagCalibration());     // 0-3
+    
+    // PID Output Array
+    JsonArray pidOutput = doc.createNestedArray("PIDOutput");
+    pidOutput.add(drone->getRollPIDOutput());   // -100 to 100
+    pidOutput.add(drone->getPitchPIDOutput());  // -100 to 100
+    pidOutput.add(drone->getYawPIDOutput());    // -100 to 100
+    
+    // Setpoints Array
+    JsonArray setpoints = doc.createNestedArray("Setpoints");
+    setpoints.add(drone->getRollSetpoint());    // degrees
+    setpoints.add(drone->getPitchSetpoint());   // degrees
+    setpoints.add(drone->getYawSetpoint());     // degrees
+    
+    // PID Gains Array
+    JsonArray pidGains = doc.createNestedArray("PIDGains");
+    double gains[9];
+    drone->getGains(gains);  // Assuming this method exists or needs to be added
+    for(int i = 0; i < 9; i++) {
+        pidGains.add(gains[i]);
+    }
+    
+    // Receiver Values Array (normalized to 0-100%)
+    JsonArray receiverValues = doc.createNestedArray("ReceiverValues");
+    receiverValues.add(valueLh);  // CH1
+    receiverValues.add(valueLv);  // CH2
+    receiverValues.add(valueRh);  // CH3
+    receiverValues.add(valueRv);  // CH4
+    receiverValues.add(valueKl);  // CH5
+    receiverValues.add(valueKr);  // CH6
+    
+    // Motor Values Array (normalized to 0-100%)
+    JsonArray motorValues = doc.createNestedArray("MotorValues");
+    double* motors = drone->getMotorValues();  // Assuming this method exists or needs to be added
+    motorValues.add(motors[0]);
+    motorValues.add(motors[1]);
+    motorValues.add(motors[2]);
+    motorValues.add(motors[3]);
+    
+    // Battery Life (you'll need to implement battery monitoring)
+    doc["BatteryLife"] = 100;  // Placeholder value, implement actual battery monitoring
+    
+    String jsonString;
+    serializeJson(doc, jsonString);
+    return jsonString;
+}
+
+void webSocketEvent(uint8_t num, WStype_t type, uint8_t * payload, size_t length) {
+    switch(type) {
+        case WStype_DISCONNECTED:
+            Serial.printf("[%u] Disconnected!\n", num);
+            break;
+            
+        case WStype_CONNECTED:
+            {
+                IPAddress ip = webSocket.remoteIP(num);
+                Serial.printf("[%u] Connected from %d.%d.%d.%d\n", num, ip[0], ip[1], ip[2], ip[3]);
+                
+                // Send initial data immediately upon connection
+                String jsonString = formatDroneData();
+                webSocket.sendTXT(num, jsonString);
+            }
+            break;
+            
+        case WStype_TEXT:
+            {
+                // Print the full payload as a string
+                String payloadStr = String((char*)payload);
+                Serial.println("Received WebSocket payload: " + payloadStr);
+                
+                // Parse incoming JSON message
+                StaticJsonDocument<200> doc;
+                DeserializationError error = deserializeJson(doc, payload);
+                
+                if (error) {
+                    Serial.print("deserializeJson() failed: ");
+                    Serial.println(error.c_str());
+                    return;
+                }
+
+                // Check if this is a PID update message
+                if (doc.containsKey("gains")) {
+                    JsonArray pidValues = doc["gains"];
+                    if (pidValues.size() == 9) {
+                        double gains[9];
+                        for (int i = 0; i < 9; i++) {
+                            gains[i] = pidValues[i];
+                        }
+                        drone->updateGain(gains);
+                        Serial.println("gains");
+                        drone->printGains();
+                    }
+                }
+            }
+            break;
+            
+        case WStype_BIN:
+            Serial.printf("[%u] Received binary length: %u\n", num, length);
+            break;
+            
+        case WStype_ERROR:
+        case WStype_FRAGMENT_TEXT_START:
+        case WStype_FRAGMENT_BIN_START:
+        case WStype_FRAGMENT:
+        case WStype_FRAGMENT_FIN:
+            break;
+    }
+}
+#endif
 
 /**
  * Loop: Read input and execute instruction
  */
 void loop() {
-    switch(droneState){
+    unsigned long loopStart = micros();
+    unsigned long stepStart;
+    
+    #if USE_WEB
+    stepStart = micros();
+    webSocket.loop();
+    if (millis() - lastUpdate >= updateInterval) {
+        String jsonString = formatDroneData();
+        webSocket.broadcastTXT(jsonString);
+        lastUpdate = millis();
+    }
+    timing.webSocketTime += (micros() - stepStart);
+    #endif
+    
+    switch(droneState) {
         case(TESTAREA):
-            handleBluetoothCommunication();
-            break;
         case(HomeAllSwitches):
             if(valueKl < 1400 || valueKr < 1400){
                 Serial.println("Please home all switches up");
@@ -281,11 +388,13 @@ void loop() {
                 droneState = HomeAllSwitches;
                 pastState = ArmESC;
                 //Start up ESC's 
+                Serial.println("Sending ESC to 2000");
                 motors[0].writeMicroseconds(2000); 
                 motors[1].writeMicroseconds(2000); 
                 motors[2].writeMicroseconds(2000); 
                 motors[3].writeMicroseconds(2000); 
                 delay(3000);
+                Serial.println("Sending ESC to 1000");
                 motors[0].writeMicroseconds(1000); 
                 motors[1].writeMicroseconds(1000); 
                 motors[2].writeMicroseconds(1000); 
@@ -299,69 +408,29 @@ void loop() {
             }
             break;
         case(StartMission):
-            static unsigned long start = 0;
-            static int samples = 0;
-            static unsigned long totalTime = 0;
-            static bool announced = false;
+            stepStart = micros();
+            drone->loop();
+            timing.droneTime += (micros() - stepStart);
             
-            // Check if throttle is above minimum AND left knob is in flight position
-            if (valueRv > 1100 && valueKl > 1400) {  // Both throttle active and armed
-                if (!announced) {
-                    Serial.println("Motors spinning - Starting timing measurements...");
-                    announced = true;
-                }
+            timing.totalTime += (micros() - loopStart);
+            timing.count++;
+            
+            // Print timing breakdown every 1000 loops
+            if(timing.count >= 1000) {
+                Serial.println("\n=== Loop Timing Breakdown ===");
+                Serial.print("WebSocket avg (us): "); 
+                Serial.println(timing.webSocketTime / timing.count);
+                Serial.print("Drone avg (us): "); 
+                Serial.println(timing.droneTime / timing.count);
+                Serial.print("Total avg (us): "); 
+                Serial.println(timing.totalTime / timing.count);
+                Serial.print("Frequency (Hz): "); 
+                Serial.println(1000000.0 / (timing.totalTime / timing.count));
+                Serial.println("===========================\n");
                 
-                if (samples < 200) {
-                    unsigned long loopStart = micros();
-                    drone->loop();
-                    unsigned long loopTime = micros() - loopStart;
-                    totalTime += loopTime;
-                    samples++;
-                } else if (samples == 200) {
-                    float avgTime = totalTime / 200.0;
-                    float frequency = 1000000.0 / avgTime;  // Convert to Hz
-                    Serial.println("Average loop time (microseconds): " + String(avgTime));
-                    Serial.println("Frequency (Hz): " + String(frequency));
-                    samples++; // Increment to prevent repeated printing
-                } else {
-                    drone->loop();  // Continue normal operation after measurements
-                }
-            } else {
-                // Reset measurements if conditions not met
-                if (announced) {
-                    Serial.println("Motors stopped - Resetting measurements");
-                    samples = 0;
-                    totalTime = 0;
-                    announced = false;
-                }
-                drone->loop();
+                // Reset counters
+                timing = {0, 0, 0, 0};
             }
             break;
     }
-}
-
-void handleBluetoothCommunication() {
-    static unsigned long lastSendTime = 0;  // Track the last time data was sent
-    const unsigned long sendInterval = 1000;  // Send data every 1000 ms (1 second)
-
-    // Check if Bluetooth is connected
-    if (deviceConnected) {
-        Serial.println("BLE is connected.");
-
-        // Check if it's time to send data
-        if (millis() - lastSendTime >= sendInterval) {
-            lastSendTime = millis();  // Update the last send time
-
-            // Prepare the data to send
-            String dataToSend = "Hello from ESP32!";  // Replace with your actual data
-            pCharacteristic->setValue(dataToSend.c_str());
-            //What does notify do?
-            pCharacteristic->notify();
-            Serial.println("Sent data: " + dataToSend);  // Print to Serial Monitor for debugging
-        }
-    } else {
-        Serial.println("BLE is not connected.");
-    }
-
-    delay(100);  // Short delay to prevent overwhelming the loop
 }

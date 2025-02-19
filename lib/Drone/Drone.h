@@ -11,13 +11,15 @@
 #include "Imu.h"
 #include "Pid.h"
 #include "Reciever.h"
+#include <Preferences.h>
+
 class Drone {
 private:
 	Imu* sensor;
-	Adafruit_BNO055 bno;
-        MotorController* controller;	
+    Adafruit_BNO055 bno;
+    MotorController* controller;	
 	Reciever* rc; 
-        double started = false;
+    bool started = false;
 
 	//clock trackers 
 	int lastImuUpdate = 0;
@@ -33,18 +35,60 @@ private:
 	DPID* velControllers[3];
 	DPID* posControllers[3];
 
+	Preferences preferences;
+	void loadGainsFromStorage();
+	void saveGainsToStorage();
+
 	void printIO();
 	// This should be run every loop and is internally gated for fast opperation
 	void fastLoop();
 	// Internal setup function. set up all objects
 	void setup();
 	//This function is to update xK, yK, zK gains
+
+    unsigned long lastCalibrationPrint = 0;
+    unsigned long droneLoopStartTime = 0;
+    unsigned long droneLoopEndTime = 0;
+    unsigned long droneLoopCount = 0;
+    unsigned long droneTotalTime = 0;
+
 public:
 	Drone(MotorController* mc, Reciever* r);
 	// Pulse the loop function from the main thread
 	void loop();
 	void updateGain(double* gains);
 	void printGains();
+
+	// New methods for WebSocket telemetry
+	double getRoll() { return imuValues[10]; }  // Roll from IMU
+	double getPitch() { return imuValues[11]; } // Pitch from IMU
+	double getYaw() { return imuValues[9]; }    // Yaw from IMU
+	
+	// Velocity getters (now using IMU gyroscope data)
+	double getRollVelocity() { return imuValues[3]; }   // Roll velocity from gyro
+	double getPitchVelocity() { return imuValues[4]; }  // Pitch velocity from gyro
+	double getYawVelocity() { return imuValues[5]; }    // Yaw velocity from gyro
+	
+	// PID output getters
+	double getRollPIDOutput() { return velControlY; }
+	double getPitchPIDOutput() { return velControlZ; }
+	double getYawPIDOutput() { return velControlX; }
+	
+	// Setpoint getters
+	double getRollSetpoint() { return velSetpoints[1]; }  // Roll setpoint
+	double getPitchSetpoint() { return velSetpoints[2]; } // Pitch setpoint
+	double getYawSetpoint() { return velSetpoints[0]; }   // Yaw setpoint
+
+	// New methods for telemetry
+	void getGains(double* gains);  // Fills array with current PID gains
+	double* getMotorValues();      // Returns array of current motor values
+
+    void printCalibrationStatus();
+
+    uint8_t getSystemCalibration() { return sensor ? sensor->getSystemCalibration() : 0; }
+    uint8_t getGyroCalibration() { return sensor ? sensor->getGyroCalibration() : 0; }
+    uint8_t getAccelCalibration() { return sensor ? sensor->getAccelCalibration() : 0; }
+    uint8_t getMagCalibration() { return sensor ? sensor->getMagCalibration() : 0; }
 };
 
 #endif

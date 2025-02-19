@@ -12,6 +12,7 @@ public:
 	// Motor (servo) objects
 	Servo* motors;
 	double* controlSig;
+    unsigned long lastMotorUpdate;
 	//Motor objects
 	MotorController(Servo* motors);
 	//Pid values

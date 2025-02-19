@@ -16,3 +16,9 @@ To Do list:
 - Get PID working
     - Right now we're taking the eu
 - Get PID working for all axes
+
+
+
+Measurement taken: 
+- Drone Loop = 650Hz
+- With Wifi on Same Core = 620Hz

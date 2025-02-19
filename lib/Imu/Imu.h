@@ -17,6 +17,11 @@ public:
 	void startSensor(Adafruit_BNO055 * _bno);
 	void print();
 	void getData(double* values);
+	void getCalibrationStatus(uint8_t& system, uint8_t& gyro, uint8_t& accel, uint8_t& mag);
+	uint8_t getSystemCalibration();
+	uint8_t getGyroCalibration();
+	uint8_t getAccelCalibration();
+	uint8_t getMagCalibration();
 };
 
 
