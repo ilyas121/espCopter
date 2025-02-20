@@ -1,5 +1,13 @@
 #include "Drone.h"
 
+struct DroneLoopTiming {
+    unsigned long imuTime;
+    unsigned long rcTime;
+    unsigned long fastLoopTime;
+    unsigned long totalTime;
+    unsigned long count;
+} droneTiming = {0, 0, 0, 0, 0};
+
 Drone::Drone(MotorController* mc, Reciever* r) { 
 	sensor = NULL;
 	controller = mc;
@@ -53,44 +61,51 @@ void Drone::setup() {
 }
 
 void Drone::loop() {
-	if(started){
-		if(droneLoopCount == 0) {
-			droneLoopStartTime = micros();  // Start timing on first loop
-		}
+	if(!started) return;
 
-		if(USE_IMU == true){
-			unsigned long currentMicros = micros();
-			
-			if(currentMicros - lastImuUpdate > 2500){
-				lastImuUpdate = currentMicros;
-				sensor->loop();
-				sensor->getData(imuValues);
-			}
-		}   
-		fastLoop();  
+	unsigned long loopStart = micros();
+	unsigned long stepStart;
 
-		droneLoopCount++;
+	if(USE_IMU) {
+		stepStart = micros();
+		unsigned long currentMicros = micros();
 		
-		if(droneLoopCount >= 1000) {
-			droneLoopEndTime = micros();
-			float totalTime = (droneLoopEndTime - droneLoopStartTime);
-			float avgLoopTime = totalTime / 1000.0;
-			float loopFrequency = 1000000.0 / avgLoopTime;
-			Serial.print("Drone loop average time (us): ");
-			Serial.print(avgLoopTime);
-			Serial.print(" Frequency (Hz): ");
-			Serial.println(loopFrequency);
-			
-			droneLoopCount = 0;  // Reset for next measurement
+		if(currentMicros - lastImuUpdate > 2500) {
+			lastImuUpdate = currentMicros;
+			sensor->loop();
+			sensor->getData(imuValues);
 		}
+		droneTiming.imuTime += (micros() - stepStart);
+	}   
+
+	stepStart = micros();
+	fastLoop();
+	droneTiming.fastLoopTime += (micros() - stepStart);
+
+	droneTiming.totalTime += (micros() - loopStart);
+	droneTiming.count++;
+	
+	if(droneTiming.count >= 1000 && LOG_TIMING) {
+		Serial.println("\n=== Drone Loop Timing Breakdown ===");
+		Serial.print("IMU avg (us): "); 
+		Serial.println(droneTiming.imuTime / droneTiming.count);
+		Serial.print("FastLoop avg (us): "); 
+		Serial.println(droneTiming.fastLoopTime / droneTiming.count);
+		Serial.print("Total avg (us): "); 
+		Serial.println(droneTiming.totalTime / droneTiming.count);
+		Serial.print("Drone Frequency (Hz): "); 
+		Serial.println(1000000.0 / (droneTiming.totalTime / droneTiming.count));
+		Serial.println("================================\n");
+		
+		// Reset counters
+		droneTiming = {0, 0, 0, 0, 0};
 	}
 }
 
 
 void Drone::fastLoop() { 
-
-	rc->getData(rcValues);
 	//RC Values Yaw = 0 - Roll = 2 - Pitch = 3  
+	rc->getData(rcValues);
 	rcValues[0] -= 1500.0;
 	rcValues[2] -= 1500.0;
 	rcValues[3] -= 1500.0;
@@ -111,36 +126,24 @@ void Drone::fastLoop() {
 	velControllers[1]->setSetpoint(velSetpoints[1]); //Roll
 	velControllers[2]->setSetpoint(velSetpoints[2]); //Pitch
 
-	//Calculating required output signal (thrust added to base throttle) needed 
-	//Vel Controller = Roll = 1 Pitch = 2 Yaw = 0
+	//Calculating required output signal
 	velControllers[0]->calculate(); //Yaw
 	velControllers[1]->calculate(); //Roll
 	velControllers[2]->calculate(); //Pitch
 
 	if(rcValues[1] < 1030){
-        output[0] = 1000;
-        output[1] = 1000;
-        output[2] = 1000;
-        output[3] = 1000;
-    }else{
-		//Current Ouptut and Direction of spin
+		output[0] = 1000;
+		output[1] = 1000;
+		output[2] = 1000;
+		output[3] = 1000;
+	} else {
+		//Current Output and Direction of spin
 		output[0] = rcValues[1] + velControlY - velControlZ - velControlX; //Front left - CCW
 		output[1] = rcValues[1] - velControlY - velControlZ + velControlX; //Front right - CW
 		output[2] = rcValues[1] + velControlY + velControlZ + velControlX; //Rear Left - CW
 		output[3] = rcValues[1] - velControlY + velControlZ - velControlX; //Rear right - CCW
-    }
+	}
 	controller->loop();
-   /** 
-	output[0] = rcValues[1] - velControlY - velControlZ + velControlX; 
-	output[1] = rcValues[1] + velControlY - velControlZ - velControlX; 
-	output[2] = rcValues[1] - velControlY + velControlZ - velControlX; 
-	output[3] = rcValues[1] + velControlY + velControlZ + velControlX; 
-
-	//The direciton of spin is off for this drone
-	output[0] = rcValues[1] + velControlY + velControlZ - velControlX; //Calculate the pulse for esc 4 (front-left - CW)
-	output[1] = rcValues[1] + velControlY - velControlZ + velControlX; //Calculate the pulse for esc 1 (front-right - CCW)
-	output[2] = rcValues[1] - velControlY + velControlZ + velControlX; //Calculate the pulse for esc 3 (rear-left - CCW)
-	output[3] = rcValues[1] - velControlY - velControlZ - velControlX; //Calculate the pulse for esc 2 (rear-right - CW)**/
 }
 
 void Drone::printIO(){

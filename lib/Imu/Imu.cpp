@@ -6,21 +6,6 @@ void Imu::loop() {
 	imu::Vector<3> g;
 	imu::Vector<3> e;
 
-	a = bno->getVector(Adafruit_BNO055::VECTOR_LINEARACCEL);
-	imuReadings[0] = a.x();
-	imuReadings[1] = a.y();
-	imuReadings[2] = a.z();
-
-	v = bno->getVector(Adafruit_BNO055::VECTOR_GYROSCOPE);
-	imuReadings[3] = v.x();
-	imuReadings[4] = v.y();
-	imuReadings[5] = v.z();
-
-	g = bno->getVector(Adafruit_BNO055::VECTOR_GRAVITY);
-	imuReadings[6] = g.x();
-	imuReadings[7] = g.y();
-	imuReadings[8] = g.z();
-
 	e = bno->getVector(Adafruit_BNO055::VECTOR_EULER);
 	imuReadings[9] = e.x();// tilt
 	imuReadings[10] = e.y();// elevation

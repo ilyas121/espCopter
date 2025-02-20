@@ -416,7 +416,7 @@ void loop() {
             timing.count++;
             
             // Print timing breakdown every 1000 loops
-            if(timing.count >= 1000) {
+            if(timing.count >= 1000 && LOG_TIMING) {
                 Serial.println("\n=== Loop Timing Breakdown ===");
                 Serial.print("WebSocket avg (us): "); 
                 Serial.println(timing.webSocketTime / timing.count);
