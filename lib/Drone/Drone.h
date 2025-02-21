@@ -52,6 +52,8 @@ private:
     unsigned long droneLoopCount = 0;
     unsigned long droneTotalTime = 0;
 
+    const int BNO055_RESET_PIN = 15;  // Add this constant
+
 public:
 	Drone(MotorController* mc, Reciever* r);
 	// Pulse the loop function from the main thread

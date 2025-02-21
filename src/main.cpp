@@ -173,10 +173,13 @@ void setup() {
     webSocket.begin();
     webSocket.onEvent(webSocketEvent);
     #endif
-
+    motA.setPeriodHertz(MOTOR_PWM_FREQUENCY);
     motA.attach(UPPER_LEFT_MOTOR, MIN_PULSE_LENGTH, MAX_PULSE_LENGTH);
+    motB.setPeriodHertz(MOTOR_PWM_FREQUENCY);
     motB.attach(UPPER_RIGHT_MOTOR, MIN_PULSE_LENGTH, MAX_PULSE_LENGTH);
+    motC.setPeriodHertz(MOTOR_PWM_FREQUENCY);
     motC.attach(LOWER_LEFT_MOTOR, MIN_PULSE_LENGTH, MAX_PULSE_LENGTH);
+    motD.setPeriodHertz(MOTOR_PWM_FREQUENCY);
     motD.attach(LOWER_RIGHT_MOTOR, MIN_PULSE_LENGTH, MAX_PULSE_LENGTH);
    
     motors[0]= motA;

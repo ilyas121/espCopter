@@ -19,6 +19,11 @@ Drone::Drone(MotorController* mc, Reciever* r) {
 void Drone::setup() {
 	Serial.println("Starting drone setup...");
 	
+	// Configure BNO055 reset pin
+	const int BNO055_RESET_PIN = 15;
+	pinMode(BNO055_RESET_PIN, OUTPUT);
+	digitalWrite(BNO055_RESET_PIN, HIGH);  // Keep BNO055 enabled
+	
 	if(USE_IMU == true){ 
 		Serial.println("Initializing IMU...");
 		sensor = new Imu();

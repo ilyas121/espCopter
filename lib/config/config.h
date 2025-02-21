@@ -8,5 +8,6 @@
 #define LOWER_RIGHT_MOTOR 17
 #define USE_IMU true
 #define USE_WEB true
-#define LOG_TIMING true
+#define LOG_TIMING false
+#define MOTOR_PWM_FREQUENCY 400
 
