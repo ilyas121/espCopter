@@ -14,7 +14,6 @@
 // Forward declarations
 String formatDroneData();
 void webSocketEvent(uint8_t num, WStype_t type, uint8_t * payload, size_t length);
-
 // WebSocket setup
 const char *ssid = "ESP32 Copter";
 const char *password = "12345678";
@@ -36,32 +35,16 @@ enum State {
 State droneState = HomeAllSwitches;
 State pastState = HomeAllSwitches;
 
-// Receiver variables
-double pastRh = 0;
-double valueRh = 0;
-double pastRv = 0;
-double valueRv = 0;
-double pastLv = 0;
-double valueLv = 0;
-double pastLh = 0;
-double valueLh = 0;
-double pastKl = 0;
-double valueKl = 0;
-double pastKr = 0;
-double valueKr = 0;
-portMUX_TYPE mux = portMUX_INITIALIZER_UNLOCKED;
-
-double* values[6] = {&valueLh, &valueLv, &valueRh, &valueRv, &valueKl, &valueKr};
 
 // System components
-Reciever* rc = new Reciever(values);
+Reciever* rc = new Reciever();
 MotorController* flight;
 Drone* drone;
-int startup = 0;
 Servo motA, motB, motC, motD;
 Servo motors[4];
 
 // Add at the top with other globals
+int startup = 0;
 unsigned long loopStartTime;
 unsigned long loopEndTime;
 unsigned long loopCount = 0;
@@ -74,90 +57,6 @@ struct LoopTiming {
     unsigned long totalTime;
     unsigned long count;
 } timing = {0, 0, 0, 0};
-
-// ---------------------------------------------------------------------------
-
-
-//----------------------------------------------------------------------------
-//ISR Routines
-void changeRh(){
-  portENTER_CRITICAL_ISR(&mux);
-  unsigned long currentTime = esp_timer_get_time();
-  if(digitalRead(25) == LOW){
-    double temp = currentTime - pastRh;
-    if(temp > 900 && temp < 2100){ // Slightly wider range
-      valueRh = temp;
-    }
-  } else {
-    pastRh = currentTime;
-  }
-  portEXIT_CRITICAL_ISR(&mux);
-}
-void changeRv(){
-  portENTER_CRITICAL_ISR(&mux);
-  if(digitalRead(26) == LOW){
-  	double temp = micros()-pastRv;
-  	if(temp > 950 && temp < 2100){
-		  valueRv = temp;
-  	}else{
-      valueRv = temp;
-  	}
-  }
-  else{
-  	pastRv = micros();
-  }
-  portEXIT_CRITICAL_ISR(&mux);
-}
-void changeLh(){
-  portENTER_CRITICAL_ISR(&mux);
-  double temp = esp_timer_get_time() - pastLh;
-  if(digitalRead(27) == LOW){
-    if(temp > 950 && temp < 2100){
-	    valueLh = temp;
-    }
-  }
-  else{
-     pastLh = esp_timer_get_time();
-  }
-  portEXIT_CRITICAL_ISR(&mux);
-}
-void changeLv(){
-  portENTER_CRITICAL_ISR(&mux);
-  double temp = esp_timer_get_time() - pastLv;
-  if(digitalRead(14) == LOW){
-    if(temp > 950 && temp < 2100){
-	    valueLv = temp;
-    }
-  }else{
-    pastLv = esp_timer_get_time();
-  }
-  portEXIT_CRITICAL_ISR(&mux);
-}
-void changeKl(){
-  portENTER_CRITICAL_ISR(&mux);
-  double temp = esp_timer_get_time() - pastKl;
-  if(digitalRead(34) == LOW){
-    if(temp > 950 && temp < 2100){
-	    valueKl = temp;
-    }
-  }else{
-    pastKl = esp_timer_get_time();
-  }
-  portEXIT_CRITICAL_ISR(&mux);
-}
-void changeKr(){
-  portENTER_CRITICAL_ISR(&mux);
-  double temp = esp_timer_get_time() - pastKr;
-  if(digitalRead(35) == LOW){
-    if(temp > 950 && temp < 2100){
-	    valueKr = temp;
-    }
-  }else{
-    pastKr = esp_timer_get_time();
-  }
-  portEXIT_CRITICAL_ISR(&mux);
-}
-//---------------------------------------------------------------------------
 
 /**
  * Start serial, attach motors, and display the instructions and format

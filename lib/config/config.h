@@ -10,4 +10,6 @@
 #define USE_WEB true
 #define LOG_TIMING false
 #define MOTOR_PWM_FREQUENCY 400
+#define SSD "ESP32 Copter";
+#define PASSWORD "12345678";
 

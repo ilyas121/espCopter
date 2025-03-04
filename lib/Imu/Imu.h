@@ -12,6 +12,7 @@ private:
 	volatile float imuReadings[12];
 	bool started;
 	int updateIndex=0;
+	portMUX_TYPE mux = portMUX_INITIALIZER_UNLOCKED;
 public:
 	void loop();
 	void startSensor(Adafruit_BNO055 * _bno);

@@ -81,6 +81,8 @@ public:
 	double getPitchSetpoint() { return velSetpoints[2]; } // Pitch setpoint
 	double getYawSetpoint() { return velSetpoints[0]; }   // Yaw setpoint
 
+	double getReceiverValue(int channel) { return rcValues[channel]; }
+
 	// New methods for telemetry
 	void getGains(double* gains);  // Fills array with current PID gains
 	double* getMotorValues();      // Returns array of current motor values
