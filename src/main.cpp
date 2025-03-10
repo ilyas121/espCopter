@@ -5,6 +5,7 @@
 #include "MotorController.h"
 #include "Imu.h"
 #include "Drone.h"
+#include "esp_timer.h"
 
 #if USE_WEB
 #include <WiFi.h>
@@ -16,25 +17,24 @@ String formatDroneData();
 void webSocketEvent(uint8_t num, WStype_t type, uint8_t * payload, size_t length);
 
 // WebSocket setup
-const char *ssid = "ESP32 Copter";
+const char *ssid = "Bingus Copter";
 const char *password = "12345678";
 WebSocketsServer webSocket(9090);
 StaticJsonDocument<1024> doc;
-unsigned long lastUpdate = 0;
-const int updateInterval = 33; // ~30Hz
+int64_t lastUpdate = 0;
+const int64_t updateInterval = 33000; // ~30Hz (in microseconds)
 #endif
 
 // State Machine
 enum State {
     ArmESC,
     Idle,
-    HomeAllSwitches,
     StartMission,
     TESTAREA
 };
 
-State droneState = HomeAllSwitches;
-State pastState = HomeAllSwitches;
+State droneState = ArmESC;
+State pastState = ArmESC;
 
 // Receiver variables
 double pastRh = 0;
@@ -145,18 +145,6 @@ void changeKl(){
   }
   portEXIT_CRITICAL_ISR(&mux);
 }
-void changeKr(){
-  portENTER_CRITICAL_ISR(&mux);
-  double temp = esp_timer_get_time() - pastKr;
-  if(digitalRead(35) == LOW){
-    if(temp > 950 && temp < 2100){
-	    valueKr = temp;
-    }
-  }else{
-    pastKr = esp_timer_get_time();
-  }
-  portEXIT_CRITICAL_ISR(&mux);
-}
 //---------------------------------------------------------------------------
 
 /**
@@ -169,9 +157,32 @@ void setup() {
     Serial.println("Booting");
 
     #if USE_WEB
-    WiFi.softAP(ssid, password);
+    
+    // Configure WiFi exactly as in the working test file
+    Serial.println("Configuring WiFi AP...");
+    WiFi.mode(WIFI_AP);
+    WiFi.setSleep(false);  // Disable power saving
+    WiFi.setTxPower(WIFI_POWER_19_5dBm);  // Max power
+
+    // Start AP
+    if(WiFi.softAP(ssid, password, 11, 0, 8)) {  // channel 1, open network, max 4 connections
+        Serial.println("WiFi AP started successfully");
+        Serial.print("SSID: ");
+        Serial.println(ssid);
+        Serial.print("Password: ");
+        Serial.println(password);
+        Serial.print("IP Address: ");
+        Serial.println(WiFi.softAPIP());
+        Serial.print("MAC Address: ");
+        Serial.println(WiFi.softAPmacAddress());
+    } else {
+        Serial.println("WiFi AP failed to start!");
+    }
+
+    // Start WebSocket server
     webSocket.begin();
     webSocket.onEvent(webSocketEvent);
+    Serial.println("WebSocket server started on port 9090");
     #endif
     motA.setPeriodHertz(MOTOR_PWM_FREQUENCY);
     motA.attach(UPPER_LEFT_MOTOR, MIN_PULSE_LENGTH, MAX_PULSE_LENGTH);
@@ -200,11 +211,8 @@ void setup() {
     attachInterrupt(digitalPinToInterrupt(14), changeLv, CHANGE);
     pinMode(34, INPUT_PULLUP);
     attachInterrupt(digitalPinToInterrupt(34), changeKl, CHANGE);
-    pinMode(35, INPUT_PULLUP);
-    attachInterrupt(digitalPinToInterrupt(35), changeKr, CHANGE);
-
     // Update PID gains
-    droneState = TESTAREA;
+    droneState = ArmESC;
 }
 
 #if USE_WEB
@@ -289,12 +297,14 @@ void webSocketEvent(uint8_t num, WStype_t type, uint8_t * payload, size_t length
             break;
             
         case WStype_TEXT:
+            Serial.printf("[%u] Received text: %s\n", num, payload);
+            // Echo back the received message
+            webSocket.sendTXT(num, payload, length);
+            
             {
-                // Print the full payload as a string
-                String payloadStr = String((char*)payload);
-                Serial.println("Received WebSocket payload: " + payloadStr);
-                
                 // Parse incoming JSON message
+                String payloadStr = String((char*)payload);
+                
                 StaticJsonDocument<200> doc;
                 DeserializationError error = deserializeJson(doc, payload);
                 
@@ -344,71 +354,47 @@ void loop() {
     #if USE_WEB
     stepStart = micros();
     webSocket.loop();
-    if (millis() - lastUpdate >= updateInterval) {
+    
+    // Print WiFi status every 5 seconds
+    static int64_t lastWifiStatusUpdate = 0;
+    if (esp_timer_get_time() - lastWifiStatusUpdate >= 5000000 && LOG_WIFI) { // 5 seconds in microseconds
+        Serial.println("\n=== WiFi Status ===");
+        Serial.print("Connected clients: ");
+        Serial.println(WiFi.softAPgetStationNum());
+        Serial.print("TX Power: ");
+        Serial.println(WiFi.getTxPower());
+        Serial.print("Free heap: ");
+        Serial.println(ESP.getFreeHeap());
+        lastWifiStatusUpdate = esp_timer_get_time();
+    }
+    
+    // Only send data if clients are connected
+    if (esp_timer_get_time() - lastUpdate >= updateInterval && WiFi.softAPgetStationNum() > 0) {
         String jsonString = formatDroneData();
         webSocket.broadcastTXT(jsonString);
-        lastUpdate = millis();
+        lastUpdate = esp_timer_get_time();
     }
     timing.webSocketTime += (micros() - stepStart);
     #endif
     
     switch(droneState) {
-        case(TESTAREA):
-        case(HomeAllSwitches):
-            if(valueKl < 1400 || valueKr < 1400){
-                Serial.println("Please home all switches up");
-                Serial.println("ValueKl: " + String(valueKl) + "ValueKr" + String(valueKr));
-		            delay(100);
-            }
-            else{
-                Serial.println("SWITCHES HOMED");
-                switch(pastState){
-                    case(HomeAllSwitches):
-                        droneState = ArmESC;
-                        pastState = HomeAllSwitches;
-                        break;
-                    case(ArmESC):
-                        droneState = StartMission;
-                        pastState = HomeAllSwitches;
-                        break;
-                    case(StartMission):
-                        break;
-                    default:
-                        while(1){
-                            Serial.println("Don goofed boi, check HomeAllSwitches state machine");
-                            delay(100);
-                        }
-                        break;
-                }
-            }
-            break;
         case(ArmESC):
             Serial.println("ARM ESC");
-            if(valueKl < 1400){
-                droneState = StartMission;
-                pastState = ArmESC;
-            }else if(valueKr < 1400){
-                droneState = HomeAllSwitches;
-                pastState = ArmESC;
-                //Start up ESC's 
-                Serial.println("Sending ESC to 2000");
-                motors[0].writeMicroseconds(2000); 
-                motors[1].writeMicroseconds(2000); 
-                motors[2].writeMicroseconds(2000); 
-                motors[3].writeMicroseconds(2000); 
-                delay(3000);
-                Serial.println("Sending ESC to 1000");
-                motors[0].writeMicroseconds(1000); 
-                motors[1].writeMicroseconds(1000); 
-                motors[2].writeMicroseconds(1000); 
-                motors[3].writeMicroseconds(1000); 
-                delay(3000);
-                Serial.println("Setup completed");
-                droneState = StartMission;
-            }else{
-                Serial.println("Choose whether to arm the esc's or not");
-                delay(100);
-            }
+            //Start up ESC's 
+            Serial.println("Sending ESC to 2000");
+            motors[0].writeMicroseconds(2000); 
+            motors[1].writeMicroseconds(2000); 
+            motors[2].writeMicroseconds(2000); 
+            motors[3].writeMicroseconds(2000); 
+            delay(3000);
+            Serial.println("Sending ESC to 1000");
+            motors[0].writeMicroseconds(1000); 
+            motors[1].writeMicroseconds(1000); 
+            motors[2].writeMicroseconds(1000); 
+            motors[3].writeMicroseconds(1000); 
+            delay(3000);
+            Serial.println("Setup completed");
+            droneState = StartMission;
             break;
         case(StartMission):
             stepStart = micros();

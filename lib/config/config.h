@@ -9,5 +9,6 @@
 #define USE_IMU true
 #define USE_WEB true
 #define LOG_TIMING false
-#define MOTOR_PWM_FREQUENCY 400
+#define LOG_WIFI false
+#define MOTOR_PWM_FREQUENCY 300
 

@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>ESP32 Copter WebSocket Test</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .status { padding: 10px; margin: 10px 0; }
+        .connected { background: #d4edda; }
+        .disconnected { background: #f8d7da; }
+        #data { white-space: pre; font-family: monospace; overflow: auto; max-height: 400px; }
+        button { margin: 5px; padding: 8px; }
+    </style>
+</head>
+<body>
+    <h1>ESP32 Copter WebSocket Test</h1>
+    <div id="status" class="status disconnected">Disconnected</div>
+    
+    <div>
+        <button onclick="connect()">Connect</button>
+        <button onclick="disconnect()">Disconnect</button>
+        <button onclick="sendTestMessage()">Send Test Message</button>
+    </div>
+    
+    <h2>Connection Info:</h2>
+    <div id="connection-info"></div>
+    
+    <h2>Received Data:</h2>
+    <div id="data"></div>
+    
+    <script>
+        let ws = null;
+        let connectionAttempts = 0;
+        const maxAttempts = 5;
+        
+        function connect() {
+            if (ws) {
+                console.log("Already connected or connecting");
+                return;
+            }
+            
+            connectionAttempts++;
+            document.getElementById('connection-info').innerHTML = 
+                `Attempt ${connectionAttempts}/${maxAttempts} - Connecting to 192.168.4.1:9090...`;
+            
+            ws = new WebSocket('ws://192.168.4.1:9090');
+            
+            ws.onopen = () => {
+                document.getElementById('status').textContent = 'Connected';
+                document.getElementById('status').className = 'status connected';
+                document.getElementById('connection-info').innerHTML += '<br>Connection established!';
+                connectionAttempts = 0;
+            };
+            
+            ws.onclose = () => {
+                document.getElementById('status').textContent = 'Disconnected';
+                document.getElementById('status').className = 'status disconnected';
+                document.getElementById('connection-info').innerHTML += '<br>Connection closed';
+                ws = null;
+                
+                if (connectionAttempts < maxAttempts) {
+                    document.getElementById('connection-info').innerHTML += '<br>Reconnecting in 2 seconds...';
+                    setTimeout(connect, 2000);
+                }
+            };
+            
+            ws.onerror = (error) => {
+                document.getElementById('connection-info').innerHTML += '<br>Error: ' + error.message;
+                console.error('WebSocket error:', error);
+            };
+            
+            ws.onmessage = (event) => {
+                const message = event.data;
+                const dataDiv = document.getElementById('data');
+                const timestamp = new Date().toLocaleTimeString();
+                
+                try {
+                    // Try to parse as JSON for pretty display
+                    const jsonData = JSON.parse(message);
+                    dataDiv.innerHTML = `[${timestamp}] ${JSON.stringify(jsonData, null, 2)}\n` + dataDiv.innerHTML;
+                } catch (e) {
+                    // If not JSON, display as is
+                    dataDiv.innerHTML = `[${timestamp}] ${message}\n` + dataDiv.innerHTML;
+                }
+            };
+        }
+        
+        function disconnect() {
+            if (ws) {
+                ws.close();
+                document.getElementById('connection-info').innerHTML += '<br>Manually disconnected';
+            }
+        }
+        
+        function sendTestMessage() {
+            if (ws && ws.readyState === WebSocket.OPEN) {
+                const testMessage = JSON.stringify({
+                    type: "test",
+                    message: "Hello from browser!",
+                    timestamp: new Date().toISOString()
+                });
+                ws.send(testMessage);
+                document.getElementById('connection-info').innerHTML += '<br>Test message sent';
+            } else {
+                document.getElementById('connection-info').innerHTML += '<br>Cannot send: not connected';
+            }
+        }
+        
+        // Auto-connect on page load
+        window.onload = connect;
+    </script>
+</body>
+</html> 
